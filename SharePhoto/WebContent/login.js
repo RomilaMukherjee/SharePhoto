@@ -133,7 +133,6 @@ function uploadPic(){
 
           results.innerHTML = '';
           var objKey = useremail + '/' + file.name;
-          alert(objKey);
           var params = {
               Key: objKey,
               ContentType: file.type,
@@ -152,7 +151,7 @@ function uploadPic(){
           results.innerHTML = 'Nothing to upload.';
       }
   }, false);
-  $('myModal').modal('toggle');
+  $('#modaldialog').hide();	
 }
 
   function listObjs() {
