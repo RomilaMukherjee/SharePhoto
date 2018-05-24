@@ -2,12 +2,15 @@
  *API to fetch login details from gmail authentication
  */
 
+var useremail;
+
 function onSignIn(googleUser) {
   var profile = googleUser.getBasicProfile();
   console.log('ID: ' + profile.getId()); // Do not send to your backend! Use an ID token instead.
   console.log('Name: ' + profile.getName());
   console.log('Image URL: ' + profile.getImageUrl());
-  console.log('Email: ' + profile.getEmail()); // This is null if the 'email' scope is not present.
+  console.log('Email: ' + profile.getEmail()); 
+  useremail= profile.getEmail();// This is null if the 'email' scope is not present.
 
   //The ID token you need to pass to your backend:
   var id_token = googleUser.getAuthResponse().id_token;
@@ -19,6 +22,7 @@ function onSignIn(googleUser) {
   
    //Call API to persist the userInformation to DB
   saveUserProfileToDynamoDB(profile);
+  
 	
 }
 
@@ -77,3 +81,93 @@ function signOut() {
      
     });
 }
+
+
+/**
+ * Update image on display while uploading
+ */
+
+function readURL(input) {
+	  if (input.files && input.files[0]) {
+	    var reader = new FileReader();
+
+	    reader.onload = function(e) {
+	      $('#profile-img-tag').attr('src', e.target.result);
+	    }
+
+	    reader.readAsDataURL(input.files[0]);
+	  }
+	}
+
+/**
+ * API to upload Pic to S3
+ */
+
+function uploadPic(){
+	AWS.config.region = 'ap-southeast-1'; // 1. Enter your region
+
+    AWS.config.credentials = new AWS.CognitoIdentityCredentials({
+      IdentityPoolId: 'ap-southeast-1:f3f71977-40d1-4531-93c1-91b813b1d8a4' // 2. Enter your identity pool
+    });
+
+    AWS.config.credentials.get(function(err) {
+      if (err) alert(err);
+      console.log(AWS.config.credentials);
+    });
+
+  var bucketName = 'snap-nus'; // Enter your bucket name
+  var bucket = new AWS.S3({
+      params: {
+          Bucket: bucketName
+      }
+  });
+
+  var fileChooser = document.getElementById('file-chooser');
+  var button = document.getElementById('upload-button');
+  var results = document.getElementById('results');
+  button.addEventListener('click', function() {
+
+      var file = fileChooser.files[0];
+
+      if (file) {
+
+          results.innerHTML = '';
+          var objKey = useremail + '/' + file.name;
+          alert(objKey);
+          var params = {
+              Key: objKey,
+              ContentType: file.type,
+              Body: file,
+              ACL: 'public-read'
+          };
+
+          bucket.putObject(params, function(err, data) {
+              if (err) {
+                  results.innerHTML = 'ERROR: ' + err;
+              } else {
+                  listObjs();
+              }
+          });
+      } else {
+          results.innerHTML = 'Nothing to upload.';
+      }
+  }, false);
+  $('myModal').modal('toggle');
+}
+
+  function listObjs() {
+      var prefix = useremail;
+      bucket.listObjects({
+          Prefix: prefix
+      }, function(err, data) {
+          if (err) {
+              results.innerHTML = 'ERROR: ' + err;
+          } else {
+              var objKeys = "";
+              data.Contents.forEach(function(obj) {
+                  objKeys += obj.Key + "<br>";
+              });
+              results.innerHTML = objKeys;
+          }
+      });
+  }

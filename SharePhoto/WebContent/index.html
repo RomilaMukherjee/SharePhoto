@@ -84,11 +84,40 @@
                       <img id="recommendPic" width="55" height="55">
                   </div>
               </div>
+             
+	<div class="col-sm-4">
+               <button type="button" class="btn btn-info btn-lg" align ="right" data-toggle="modal" data-target="#myModal">Post Snap</button>
+               <div id="results"></div>
+               <!-- Modal -->
+               <div class="modal" id="myModal" role="dialog">
+                    <div class="modal-dialog">
+    
+                      <!-- Modal content-->
+                     <div class="modal-content" id="modelpopup">      
+                       <div class="modal-header">
+                          <button type="button" class="close" data-dismiss="modal">&times;</button>
+                          <h4 class="modal-title">Upload Snap</h4>
+                       </div>
+                       
+                    <div class="modal-body">
+                       <p>Choose Snap to Post</p>
+                       <input type="file" id="file-chooser"  onchange="readURL(this);"/> <br>
+                      
+                       <img src="" id="profile-img-tag" width="200px"/> 
+                       
+                       <button id="upload-button" onclick="uploadPic();">Post</button>  
+                        <div id="results"></div>     
+                    </div>
+                  <div class="modal-footer">
+                  <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
              </div>
-		</div>
-	</div>
-
-
+          </div>    
+     </div>
+      </div>
+</div>
+</div>
+</div>
+</div>
 
 </body>
 </html>
