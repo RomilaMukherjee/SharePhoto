@@ -1,5 +1,5 @@
 /**
- *API to fetch login details from gmail 
+ *API to fetch login details from gmail authentication
  */
 
 function onSignIn(googleUser) {
@@ -16,44 +16,10 @@ function onSignIn(googleUser) {
   $("#profilePic").attr('src',profile.getImageUrl());
   $("#pName").text(profile.getName());
   
-
+  
+   //Call API to persist the userInformation to DB
+  saveUserProfileToDynamoDB(profile);
 	
-  	AWS.config.update({
-	  region: "ap-southeast-1",
-	});
-  	
-  	AWS.config.credentials = new AWS.CognitoIdentityCredentials({
-		  IdentityPoolId: "ap-southeast-1:af3ff7b8-a334-4e0c-b2df-5dfdf4046147",
-		  RoleArn: "arn:aws:iam::163612915076:role/Cognito_TeamShareUnauth_Role"
-			  
-	});
-  	
-  	var dynamodb = new AWS.DynamoDB();
-  	var docClient = new AWS.DynamoDB.DocumentClient();
-	var currentDate = new Date();
-	var params = {
-        TableName :"user",
-        Item:{
-        	"userId":profile.getEmail(),
-            "userName":profile.getName(),
-            "myGallery": {},
-            "preferenceAttribute":{},
-            "followers":{},
-            "likeCatalog":{},
-            "loginTimeStamp":currentDate,
-            "userProfileImage":"romilaPic.jpg",
-            "visitCount":"1"
-            
-       }
-	};
-	docClient.put(params, function(err, data) {
-	      if (err) {
-	          console.log("Error occurred");
-	      } else {
-	    	  console.log("Add item success");
-	      }
-	});
-
 }
 
 
@@ -65,7 +31,35 @@ function onSignIn(googleUser) {
  */
 function saveUserProfileToDynamoDB(profile){
 	
-	
+	AWS.config.update({
+		  region: "ap-southeast-1",
+	});
+	  	
+  	AWS.config.credentials = new AWS.CognitoIdentityCredentials({
+		  IdentityPoolId: "ap-southeast-1:af3ff7b8-a334-4e0c-b2df-5dfdf4046147",
+		  RoleArn: "arn:aws:iam::163612915076:role/Cognito_TeamShareUnauth_Role"
+	});
+  	
+  	var dynamodb = new AWS.DynamoDB();
+  	var docClient = new AWS.DynamoDB.DocumentClient();
+	var currentDate = new Date();
+	console.log(currentDate);
+	var params = {
+        TableName :"user",
+        Item:{
+        	"userId":profile.getEmail(),
+            "userName":profile.getName(),
+            "loginTimeStamp":currentDate,
+            "visitCount":1
+         }
+	};
+	docClient.put(params, function(err, data) {
+	      if (err) {
+	          console.log("Error occurred while saving user profile");
+	      } else {
+	    	  console.log("Add item successfully to user profile");
+	      }
+	});
 }
 
 
