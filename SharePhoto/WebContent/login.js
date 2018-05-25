@@ -49,13 +49,40 @@ function saveUserProfileToDynamoDB(profile){
 	var currentDate = new Date();
 	console.log(currentDate);
 	var params = {
-        TableName :"user",
-        Item:{
-        	"userId":profile.getEmail(),
-            "userName":profile.getName(),
-            "loginTimeStamp":currentDate,
-            "visitCount":1
-         }
+			TableName : "user",
+			Item : {
+				"userId" : profile.getEmail(),
+				"userName" : profile.getName(),
+				"loginTimeStamp" : currentDate,
+				"visitCount" : 1,
+				"followers" : [ {
+					"userName" : "abc1",
+					"userId" : "abc1@gmail.com"
+				}, {
+					"userName" : "abc2",
+					"userId" : "abc2@gmail.com"
+				}, {
+					"userName" : "abc3",
+					"userId" : "abc3@gmail.com"
+				}, {
+					"userName" : "abc4",
+					"userId" : "abc4@gmail.com"
+				} ],
+				"following" : [ {
+					"userName" : "abc5",
+					"userId" : "abc5@gmail.com"
+				}, {
+					"userName" : "abc6",
+					"userId" : "abc6@gmail.com"
+				}, {
+					"userName" : "abc7",
+					"userId" : "abc7@gmail.com"
+				}, {
+					"userName" : "abc8",
+					"userId" : "abc8@gmail.com"
+				} ]
+
+			}
 	};
 	docClient.put(params, function(err, data) {
 	      if (err) {

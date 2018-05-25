@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+<!--<script src="https://sdk.amazonaws.com/js/aws-sdk-2.7.16.min.js"></script>  -->
+<meta charset="utf-8">
+<meta name="google-signin-scope" content="profile email">
+<meta name="google-signin-client_id"
+	content="953824955503-uvkn12ucjhtqv9mkilufek8lec8isj90.apps.googleusercontent.com">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<script
+	src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<link rel="stylesheet"
+	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<script
+	src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+<title>Dashboard</title>
+
+<script type="text/javascript" src="login.js"></script>
+<script type="text/javascript" src="readData.js"></script>
+<script src="https://apis.google.com/js/platform.js" async defer></script>
+
+<style>
+.data {
+	display: none;
+}
+
+* {
+	box-sizing: border-box;
+}
+
+.header {
+	border: 1px solid red;
+	padding: 15px;
+}
+
+.menu {
+	width: 25%;
+	float: left;
+	padding: 15px;
+	border: 1px solid red;
+}
+
+.main {
+	width: 75%;
+	float: left;
+	padding: 15px;
+	border: 1px solid red;
+}
+</style>
+</head>
+<body>
+	<div class="jumbotron text-center">
+		<h1>Ready to Share Photo</h1>
+	</div>
+	<div class="container">
+
+		<div class="row">
+			<div class="col-sm-12" align="center">
+				<div class="g-signin2" data-onsuccess="onSignIn"></div>
+			</div>
+		</div>
+
+		<div class="data">
+			<div class="row">
+
+				<div class="col-sm-4 well">
+					<p id="pName" class="card-title"></p>
+					<img id="profilePic" class="img-circle" width="70" height="70">
+				</div>
+
+				<!-- <div class="col-sm-4">
+					<script type="text/javascript">
+						// Popup window code
+						function newPopup(url) {
+							popupWindow = window
+									.open(
+											url,
+											'popUpWindow',
+											'maximise=yes,,left=10,top=10,resizable=yes,scrollbars=yes,toolbar=yes,menubar=no,location=no,directories=no,status=yes')
+						}
+					</script>
+					<div class="well">
+						<a href="JavaScript:newPopup('FollowerUsers.html');"
+							title="Some say it's a search engine">Followers 67</a>
+					</div>
+				</div>
+ -->
+
+				<div class="col-sm-4">
+					<div class="well">
+						<a href="FollowerUsers.html" title="Some say it's a search engine">Followers
+							67</a>
+					</div>
+				</div>
+				<div class="col-sm-4">
+					<div class="well">
+						<a href="FollowingUsers.html"
+							title="Some say it's a search engine">Following 72</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>
