@@ -14,8 +14,7 @@ function onSignIn(googleUser) {
 
   //The ID token you need to pass to your backend:
   var id_token = googleUser.getAuthResponse().id_token;
-  $(".g-signin2").css("display","none");
-  $(".data").css("display","block");
+  location.replace("Home.html");
   $("#profilePic").attr('src',profile.getImageUrl());
   $("#pName").text(profile.getName());
   
