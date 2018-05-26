@@ -27,7 +27,6 @@ function onSignIn(googleUser) {
 }
 
 
-
 /**
  * API to save user profile in database
  * @param profile
@@ -47,51 +46,81 @@ function saveUserProfileToDynamoDB(profile){
   	var dynamodb = new AWS.DynamoDB();
   	var docClient = new AWS.DynamoDB.DocumentClient();
 	var currentDate = new Date();
-	console.log(currentDate);
-	var params = {
-			TableName : "user",
-			Item : {
-				"userId" : profile.getEmail(),
-				"userName" : profile.getName(),
-				"loginTimeStamp" : currentDate,
-				"visitCount" : 1,
-				"followers" : [ {
-					"userName" : "abc1",
-					"userId" : "abc1@gmail.com"
-				}, {
-					"userName" : "abc2",
-					"userId" : "abc2@gmail.com"
-				}, {
-					"userName" : "abc3",
-					"userId" : "abc3@gmail.com"
-				}, {
-					"userName" : "abc4",
-					"userId" : "abc4@gmail.com"
-				} ],
-				"following" : [ {
-					"userName" : "abc5",
-					"userId" : "abc5@gmail.com"
-				}, {
-					"userName" : "abc6",
-					"userId" : "abc6@gmail.com"
-				}, {
-					"userName" : "abc7",
-					"userId" : "abc7@gmail.com"
-				}, {
-					"userName" : "abc8",
-					"userId" : "abc8@gmail.com"
-				} ]
+	
+	//Check whether user exist in database
+	var isExistingUser=false;
+	var table = "user";
+    
+	var paramsForUpdate = {
+        TableName:table,
+        Key:{
+            "userId": profile.getEmail(),
+            "userName":profile.getName()
+        },
+        UpdateExpression: "set visitCount = visitCount + :counter",
+        ExpressionAttributeValues:{":counter":1},
+        ReturnValues:"UPDATED_NEW"
+    };
+    docClient.update(paramsForUpdate, function(err, data) {
+    	isExistingUser =true;
+        if (err) {
+            console.log("Error occurred");
+        	isExistingUser =false;
+        } else {
+            console.log("Update Successful");
+            isExistingUser =true;
+        }
+        
+        if(!isExistingUser){
+    		var paramsForCreate = {
+    		        TableName :"user",
+    		        Item:{
+    		        	"userId":profile.getEmail(),
+    		            "userName":profile.getName(),
+    		            "loginTimeStamp":currentDate,
+    		            "visitCount":1,
+    		            "userProfile":profile.getImageUrl(),
+    		            "followers" : [ {
+    						"userName" : "Romila Mukherjee",
+    						"userId" : "ms.romila@gmail. com"
+    					}, {
+    						"userName" : "abc2",
+    						"userId" : "abc2@gmail.com"
+    					}, {
+    						"userName" : "abc3",
+    						"userId" : "abc3@gmail.com"
+    					}, {
+    						"userName" : "abc4",
+    						"userId" : "abc4@gmail.com"
+    					} ],
+    					"following" : [ {
+    						"userName" : "abc5",
+    						"userId" : "abc5@gmail.com"
+    					}, {
+    						"userName" : "abc6",
+    						"userId" : "abc6@gmail.com"
+    					}, {
+    						"userName" : "abc7",
+    						"userId" : "abc7@gmail.com"
+    					}, {
+    						"userName" : "abc8",
+    						"userId" : "abc8@gmail.com"
+    					} ]
+    		         }
+    			};
+    			docClient.put(paramsForCreate, function(err, data) {
+    			      if (err) {
+    			          console.log("Error occurred while saving user profile");
+    			      } else {
+    			    	  console.log("Add item successfully to user profile");
+    			      }
+    			});
 
-			}
-	};
-	docClient.put(params, function(err, data) {
-	      if (err) {
-	          console.log("Error occurred while saving user profile");
-	      } else {
-	    	  console.log("Add item successfully to user profile");
-	      }
-	});
-}
+    	}
+
+    });
+ }
+
 
 
 /**
