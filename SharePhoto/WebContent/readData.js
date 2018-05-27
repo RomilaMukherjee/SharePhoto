@@ -95,6 +95,7 @@ function showOnUI(data, condition) {
 			var userName = data.Item.followers[i].userName;
 			var userId = data.Item.followers[i].userId;
 			var buttonIdFol = "follButton" + i;
+			var userNameId = "div_name" + i;
 			document.write("		<div class=\"media user-card-sm\">");
 			document
 					.write("			<a class=\"media-left\" onclick=\"viewProfile(this)\" href=\"#\"> ");
@@ -103,7 +104,7 @@ function showOnUI(data, condition) {
 			document.write("			<\/a>");
 			document.write("			<div class=\"media-body\">");
 
-			var nameStr = "				<h4 id=\"div_name\" onclick=\"viewProfile(this)\" class=\"media-heading\">"
+			var nameStr = "				<h4 id=" + userNameId + " onclick=\"viewProfile(this)\" class=\"media-heading\">"
 					+ userName + "<\/h4>";
 			document.write(nameStr);
 			var idStr = "<p class=\"text-success\">" + userId + "<\/p>";
