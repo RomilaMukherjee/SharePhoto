@@ -15,17 +15,47 @@ function onSignIn(googleUser) {
   //The ID token you need to pass to your backend:
   var id_token = googleUser.getAuthResponse().id_token;
   location.replace("Home.html");
-  $("#profilePic").attr('src',profile.getImageUrl());
-  $("#pName").text(profile.getName());
-  
-  
+  if(profile != undefined)
+	  {
+	  localStorage.setItem('profile', JSON.stringify(profile)); 
+  window.location.href =  "Home.html";}
+  else
+	  {
+	  window.location.href =  "Home.html";
+  }
+ 
+    
    //Call API to persist the userInformation to DB
   saveUserProfileToDynamoDB(profile);
   
 	
 }
 
+function getprofiledetails(){
+	var profilevalue = localStorage.getItem('profile');
+	var finalvalue = JSON.parse(profilevalue);
+	  $("#profilePic").attr('src',finalvalue.Paa);
+	  $("#pName").text(finalvalue.ig);
+	  useremail= finalvalue.U3;
+	  
+}
 
+function myFunction() {
+    var input, filter, ul, li, a, i;
+    input = document.getElementById("myInput");
+    filter = input.value.toUpperCase();
+    ul = document.getElementById("myUL");
+    li = ul.getElementsByTagName("li");
+    for (i = 0; i < li.length; i++) {
+        a = li[i].getElementsByTagName("a")[0];
+        if (a.innerHTML.toUpperCase().indexOf(filter) > -1) {
+            li[i].style.display = "";
+        } else {
+            li[i].style.display = "none";
+
+        }
+    }
+}
 /**
  * API to save user profile in database
  * @param profile
@@ -130,9 +160,7 @@ function signOut() {
     var auth2 = gapi.auth2.getAuthInstance();
     auth2.signOut().then(function () {
     	 $(".g-signin2").css("display","block");
-    	  $(".data").css("display","none");
-    	  $(".button_div").css("display","none");
-    	  
+    	  $(".data").css("display","none");    	  
      
     });
 }
