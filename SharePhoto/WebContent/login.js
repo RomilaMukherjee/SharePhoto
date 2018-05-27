@@ -15,14 +15,29 @@ function onSignIn(googleUser) {
   //The ID token you need to pass to your backend:
   var id_token = googleUser.getAuthResponse().id_token;
   location.replace("Home.html");
-  $("#profilePic").attr('src',profile.getImageUrl());
-  $("#pName").text(profile.getName());
-  
-  
+  if(profile != undefined)
+	  {
+	  localStorage.setItem('profile', JSON.stringify(profile)); 
+  window.location.href =  "Home.html";}
+  else
+	  {
+	  window.location.href =  "Home.html";
+  }
+ 
+    
    //Call API to persist the userInformation to DB
   saveUserProfileToDynamoDB(profile);
   
 	
+}
+
+function getprofiledetails(){
+	var profilevalue = localStorage.getItem('profile');
+	var finalvalue = JSON.parse(profilevalue);
+	  $("#profilePic").attr('src',finalvalue.Paa);
+	  $("#pName").text(finalvalue.ig);
+	  useremail= finalvalue.U3;
+	  
 }
 
 function myFunction() {
@@ -145,9 +160,7 @@ function signOut() {
     var auth2 = gapi.auth2.getAuthInstance();
     auth2.signOut().then(function () {
     	 $(".g-signin2").css("display","block");
-    	  $(".data").css("display","none");
-    	  $(".button_div").css("display","none");
-    	  
+    	  $(".data").css("display","none");    	  
      
     });
 }
