@@ -111,7 +111,7 @@ function showOnUI(data, condition) {
 			document.write("			<div class=\"media-right\">");
 			document
 					.write("				<button id=\"follButton\" class=\"btn btn-default btn-sm\"");
-			document.write("					onclick=\"follow(this)\">follow<\/button>");
+			document.write("					onclick=\"follow(this)\">Follow<\/button>");
 			document.write("			<\/div>");
 			document.write("		<\/div>");
 		}
@@ -161,7 +161,13 @@ function getFollowers() {
 }
 
 function follow(name) {
-	document.getElementById("but").style.color = "red";
+	document.getElementById("follButton").style.color = "red";
+	if(document.getElementById("follButton").innerText == "Follow"){
+		document.getElementById("follButton").innerText = "Unfollow";
+	}else{
+		document.getElementById("follButton").innerText = "Follow";
+	}
+	
 	alert(name);
 }
 
