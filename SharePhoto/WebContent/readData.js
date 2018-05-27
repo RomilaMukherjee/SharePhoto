@@ -42,8 +42,8 @@ function readItem(a) {
 	var params = {
 		TableName : "user",
 		Key : {
-			"userId" : "sharanyamenon0592@gmail.com",
-			"userName" : "Sharanya Menon"
+			"userId" : "hersom179@gmail.com",
+			"userName" : "royal hersom"
 		},
 		ProjectionExpression : condition
 
@@ -94,8 +94,10 @@ function showOnUI(data, condition) {
 		for (i = 0; i < data.Item.followers.length; i++) {
 			var userName = data.Item.followers[i].userName;
 			var userId = data.Item.followers[i].userId;
+			alert(userId);
 			var buttonIdFol = "follButton" + i;
 			var userNameId = "div_name" + i;
+			var userIDNo = "userId" + i;
 			document.write("		<div class=\"media user-card-sm\">");
 			document
 					.write("			<a class=\"media-left\" onclick=\"viewProfile(this)\" href=\"#\"> ");
@@ -107,7 +109,7 @@ function showOnUI(data, condition) {
 			var nameStr = "				<h4 id=" + userNameId + " onclick=\"viewProfile(this)\" class=\"media-heading\">"
 					+ userName + "<\/h4>";
 			document.write(nameStr);
-			var idStr = "<p class=\"text-success\">" + userId + "<\/p>";
+			var idStr = "<p id=" + userIDNo + " class=\"text-success\">" + userId + "<\/p>";
 			document.write(idStr);
 			document.write("			<\/div>");
 			document.write("			<div class=\"media-right\">");
@@ -164,17 +166,73 @@ function getFollowers() {
 }
 
 function follow(button_id) {
+	var idNo = button_id.substr(10, 1);
+	var nameId = "div_name" + idNo;
+	var emailId = "userId" + idNo;
 	document.getElementById(button_id).style.color = "red";
-	if(document.getElementById(button_id).innerText == "Follow"){
+	if(document.getElementById(button_id).innerText == "Unfollow" ){ // "Follow"
 		document.getElementById(button_id).innerText = "Unfollow";
-		alert(document.getElementById("div_name").innerText);
-		//removeFromFollowers(document.getElementById("div_name").innerText);		
+		//alert(document.getElementById(nameId).innerText);
+		removeFromFollowers(document.getElementById(nameId).innerText,document.getElementById(emailId).innerText);		
 	}else{
-		document.getElementById(button_id).innerText = "Follow";
-		//AddToFollowers(removeFromFollowers(document.getElementById("div_name").innerText));
+		document.getElementById(button_id).innerText = "Follow add";
+		AddToFollowers(document.getElementById(nameId).innerText);
 	}
 	
 	alert(name);
+}
+
+function removeFromFollowers(Name , email){
+	alert("To Remove is" + Name);
+	alert("with Email Id" + email);
+	
+	var params = {
+			  TableName : 'user',
+			  Key: {
+				  "userId" : "hersom179@gmail.com",
+				  "userName" : "royal hersom"
+				},
+				ConditionExpression: "followers[3].userId = :name",
+				UpdateExpression: "remove followers[3]",
+				ExpressionAttributeValues: { ':name': email }
+		    };
+			console.log("Attempting a conditional delete...");
+			docClient.update(params, function(err, data) {
+			    if (err) {
+			        console.error("Unable to delete item. Error JSON:", JSON.stringify(err, null, 2));
+			    } else {
+			        console.log("DeleteItem succeeded:", JSON.stringify(data, null, 2));
+			    }
+			});
+			
+}
+
+function AddToFollowers(FollowName){
+	//var res = str.substr(7, 6);
+	var table = "user";
+    
+	var paramsForUpdate = {
+        TableName:table,
+        Key:{
+        	"userId" : "hersom179@gmail.com",
+			"userName" : "royal hersom"
+//            "userId": profile.getEmail(),
+//            "userName":profile.getName()
+        },
+        UpdateExpression: "set followers[2].userId = :name",
+        ExpressionAttributeValues:{":name":"KERAN"},
+        ReturnValues:"UPDATED_NEW"
+    };
+    docClient.update(paramsForUpdate, function(err, data) {
+    	isExistingUser =true;
+        if (err) {
+            console.log("Error occurred",JSON.stringify(err, null, 2));
+        	isExistingUser =false;
+        } else {
+            console.log("Update Successful");
+            isExistingUser =true;
+        }
+    });
 }
 
 function addElement(parentId, elementTag, elementId, html) {
