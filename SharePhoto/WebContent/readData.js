@@ -94,6 +94,7 @@ function showOnUI(data, condition) {
 		for (i = 0; i < data.Item.followers.length; i++) {
 			var userName = data.Item.followers[i].userName;
 			var userId = data.Item.followers[i].userId;
+			var buttonIdFol = "follButton" + i;
 			document.write("		<div class=\"media user-card-sm\">");
 			document
 					.write("			<a class=\"media-left\" onclick=\"viewProfile(this)\" href=\"#\"> ");
@@ -110,8 +111,8 @@ function showOnUI(data, condition) {
 			document.write("			<\/div>");
 			document.write("			<div class=\"media-right\">");
 			document
-					.write("				<button id=\"follButton\" class=\"btn btn-default btn-sm\"");
-			document.write("					onclick=\"follow(this)\">Follow<\/button>");
+					.write("				<button id=" + buttonIdFol + " class=\"btn btn-default btn-sm\"");
+			document.write("					onclick=\"follow(this.id)\">Follow<\/button>");
 			document.write("			<\/div>");
 			document.write("		<\/div>");
 		}
@@ -122,6 +123,7 @@ function showOnUI(data, condition) {
 		for (i = 0; i < data.Item.following.length; i++) {
 			var userName = data.Item.following[i].userName;
 			var userId = data.Item.following[i].userId;
+			var buttonId = 'unfollButton' + i;
 			document.write("		<div class=\"media user-card-sm\">");
 			document
 					.write("			<a class=\"media-left\" onclick=\"viewProfile(this)\" href=\"#\"> ");
@@ -138,8 +140,8 @@ function showOnUI(data, condition) {
 			document.write("			<\/div>");
 			document.write("			<div class=\"media-right\">");
 			document
-					.write("				<button id=\"unfollButton\" class=\"btn btn-default btn-sm\"");
-			document.write("					onclick=\"unfollow(this)\">unfollow<\/button>");
+					.write("				<button id=" + buttonId + " class=\"btn btn-default btn-sm\"");
+			document.write("					onclick=\"unfollow(this.id)\">unfollow<\/button>");
 			document.write("			<\/div>");
 			document.write("		<\/div>");
 		}
@@ -160,12 +162,15 @@ function getFollowers() {
 	readItem(false);
 }
 
-function follow(name) {
-	document.getElementById("follButton").style.color = "red";
-	if(document.getElementById("follButton").innerText == "Follow"){
-		document.getElementById("follButton").innerText = "Unfollow";
+function follow(button_id) {
+	document.getElementById(button_id).style.color = "red";
+	if(document.getElementById(button_id).innerText == "Follow"){
+		document.getElementById(button_id).innerText = "Unfollow";
+		alert(document.getElementById("div_name").innerText);
+		//removeFromFollowers(document.getElementById("div_name").innerText);		
 	}else{
-		document.getElementById("follButton").innerText = "Follow";
+		document.getElementById(button_id).innerText = "Follow";
+		//AddToFollowers(removeFromFollowers(document.getElementById("div_name").innerText));
 	}
 	
 	alert(name);
