@@ -151,6 +151,7 @@ function readURL(input) {
 	    }
 
 	    reader.readAsDataURL(input.files[0]);
+	    alert(useremail);
 	  }
 	}
 
@@ -159,10 +160,10 @@ function readURL(input) {
  */
 
 function uploadPic(){
-	AWS.config.region = 'ap-southeast-1'; // 1. Enter your region
+	AWS.config.region = 'us-east-1'; // 1. Enter your region
 
     AWS.config.credentials = new AWS.CognitoIdentityCredentials({
-      IdentityPoolId: 'ap-southeast-1:f3f71977-40d1-4531-93c1-91b813b1d8a4' // 2. Enter your identity pool
+      IdentityPoolId: 'us-east-1:6a0ee5aa-6f58-4e07-a313-473b446ab385' // 2. Enter your identity pool
     });
 
     AWS.config.credentials.get(function(err) {
@@ -206,7 +207,10 @@ function uploadPic(){
           results.innerHTML = 'Nothing to upload.';
       }
   }, false);
-  $('#modaldialog').hide();	
+
+  $('#modaldialog').hide();
+  $('#page-top').style.display="block"; 
+
 }
 
   function listObjs() {
