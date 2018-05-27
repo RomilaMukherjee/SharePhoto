@@ -52,6 +52,7 @@
         <li><a href="#services" class="page-scroll">My Profile</a></li>
         <li><a href="#contact" class="page-scroll" onclick="signOut()">SignOut</a></li>
       </ul>
+      
     </div>
     <!-- /.navbar-collapse --> 
   </div>
@@ -76,6 +77,8 @@
         </div>
         </div>
         <div class="col-md-8 col-sm-6 section-title text-center">
+        <input type="text" id="myInput" onkeyup="myFunction()" placeholder="Search for names.." title="Type in a name"><br><br>
+               
         <h2>Snap !! Share !! Smile !!</h2>
         <button type="button" class="btn btn-info btn-lg" align ="left" onclick="window.location.href = 'dashboard.html'">Dashboard</button>
         <button type="button" class="btn btn-info btn-lg" align ="left" data-toggle="modal" data-target="#myModal">Post Snap</button>
