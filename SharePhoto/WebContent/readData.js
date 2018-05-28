@@ -207,11 +207,19 @@ function removeFromFollowers(Name , email){
 			
 }
 
-function AddToFollowers(FollowName){
+function AddToFollowers(){
+
+	//var docClient = new AWS.DynamoDB.DocumentClient();
+	
+
+
+	//var AWS = require('aws-sdk')
+	var DB = new AWS.DynamoDB.DocumentClient()
 	//var res = str.substr(7, 6);
 	var table = "user";
     
-	var paramsForUpdate = {
+	//var paramsForUpdate = {
+	return DB.update({
         TableName:table,
         Key:{
         	"userId" : "hersom179@gmail.com",
@@ -219,20 +227,29 @@ function AddToFollowers(FollowName){
 //            "userId": profile.getEmail(),
 //            "userName":profile.getName()
         },
-        UpdateExpression: "set followers[2].userId = :name",
-        ExpressionAttributeValues:{":name":"KERAN"},
-        ReturnValues:"UPDATED_NEW"
-    };
-    docClient.update(paramsForUpdate, function(err, data) {
-    	isExistingUser =true;
-        if (err) {
-            console.log("Error occurred",JSON.stringify(err, null, 2));
-        	isExistingUser =false;
-        } else {
-            console.log("Update Successful");
-            isExistingUser =true;
-        }
-    });
+        ReturnValues: 'ALL_NEW',
+        UpdateExpression: 'set followers = list_append(if_not_exists(followers, :empty_list), :array)',
+        ExpressionAttributeValues: {
+            ':array': [{"userName":"KiraTest1","userId":"Kira@test.email"}],
+            ':empty_list': []
+          } 
+//        UpdateExpression: "set followers[2].userId = :name",
+//        ExpressionAttributeValues:{":name":"KERAN"},
+//        ReturnValues:"UPDATED_NEW"
+//        UpdateExpression: "set followers = :array",
+//        ExpressionAttributeValues:{":array":[{"userName":"Kira","userId":"Kira@test.email"}]},
+//        ReturnValues:"UPDATED_NEW"
+    }).promise()
+//    docClient.update(paramsForUpdate, function(err, data) {
+//    	isExistingUser =true;
+//        if (err) {
+//            console.log("Error occurred",JSON.stringify(err, null, 2));
+//        	isExistingUser =false;
+//        } else {
+//            console.log("Update Successful");
+//            isExistingUser =true;
+//        }
+//    });
 }
 
 function addElement(parentId, elementTag, elementId, html) {
