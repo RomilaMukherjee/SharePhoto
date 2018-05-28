@@ -170,13 +170,13 @@ function follow(button_id) {
 	var nameId = "div_name" + idNo;
 	var emailId = "userId" + idNo;
 	document.getElementById(button_id).style.color = "red";
-	if(document.getElementById(button_id).innerText == "Unfollow" ){ // "Follow"
+	if(document.getElementById(button_id).innerText == "Follow" ){ // "Follow"
 		document.getElementById(button_id).innerText = "Unfollow";
 		//alert(document.getElementById(nameId).innerText);
-		removeFromFollowers(document.getElementById(nameId).innerText,document.getElementById(emailId).innerText);		
-	}else{
-		document.getElementById(button_id).innerText = "Follow add";
 		AddToFollowers(document.getElementById(nameId).innerText);
+		}else{
+		document.getElementById(button_id).innerText = "Follow add";
+		removeFromFollowers(document.getElementById(nameId).innerText,document.getElementById(emailId).innerText);		
 	}
 	
 	alert(name);
