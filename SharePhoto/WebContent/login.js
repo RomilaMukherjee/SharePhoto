@@ -179,7 +179,6 @@ function readURL(input) {
 	    }
 
 	    reader.readAsDataURL(input.files[0]);
-	    alert(useremail);
 	  }
 	}
 
@@ -188,10 +187,10 @@ function readURL(input) {
  */
 
 function uploadPic(){
-	AWS.config.region = 'us-east-1'; // 1. Enter your region
+	AWS.config.region = 'ap-southeast-1'; // 1. Enter your region
 
     AWS.config.credentials = new AWS.CognitoIdentityCredentials({
-      IdentityPoolId: 'us-east-1:6a0ee5aa-6f58-4e07-a313-473b446ab385' // 2. Enter your identity pool
+      IdentityPoolId: 'ap-southeast-1:7c5663a7-4136-408a-a9ba-5caa4f297aef' // 2. Enter your identity pool
     });
 
     AWS.config.credentials.get(function(err) {
@@ -217,6 +216,7 @@ function uploadPic(){
 
           results.innerHTML = '';
           var objKey = useremail + '/' + file.name;
+          console.log(objKey);
           var params = {
               Key: objKey,
               ContentType: file.type,
@@ -228,7 +228,7 @@ function uploadPic(){
               if (err) {
                   results.innerHTML = 'ERROR: ' + err;
               } else {
-                  listObjs();
+                  alert("Image uploaded successfully!");
               }
           });
       } else {
@@ -236,8 +236,7 @@ function uploadPic(){
       }
   }, false);
 
-  $('#modaldialog').hide();
-  $('#page-top').style.display="block"; 
+  $('#modaldialog').hide(); 
 
 }
 
@@ -256,4 +255,38 @@ function uploadPic(){
               results.innerHTML = objKeys;
           }
       });
+  }
+  
+  function getImage()
+  {
+	  AWS.config.region = 'ap-southeast-1'; // 1. Enter your region
+
+	    AWS.config.credentials = new AWS.CognitoIdentityCredentials({
+	      IdentityPoolId: 'ap-southeast-1:7c5663a7-4136-408a-a9ba-5caa4f297aef' // 2. Enter your identity pool
+	    });
+
+	    AWS.config.credentials.get(function(err) {
+	      if (err) alert(err);
+	      console.log(AWS.config.credentials);
+	    });
+	  var s3Bucket = new AWS.S3({
+	      params: {
+	          Bucket: 'snap-nus'
+	      }
+	  });
+	  var urlParams = {Bucket: 'snap-nus', Key: 'testing'};
+	  s3Bucket.getSignedUrl('getObject', urlParams, function(err, url){
+	    console.log('the url of the image is', url);
+	  })
+	  
+	  var params = {Bucket: 'snap-nus'};
+	  s3Bucket.listObjects(params, function(err, data){
+	    var bucketContents = data.Contents;
+	      for (var i = 0; i < bucketContents.length; i++){
+	        var urlParams = {Bucket: 'snap-nus', Key: bucketContents[i].Key};
+	          s3.getSignedUrl('getObject',urlParams, function(err, url){
+	            console.log('the url of the image is', url);
+	          });
+	      }
+	  });
   }

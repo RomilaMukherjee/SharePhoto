@@ -376,8 +376,7 @@ function mousedown(event) {
  * OVERFLOW
  ***********************************************/
  
-var cache = {}; // cleared out every once in while
-setInterval(function () { cache = {}; }, 10 * 1000);
+
 
 var uniqueID = (function () {
     var i = 0;
