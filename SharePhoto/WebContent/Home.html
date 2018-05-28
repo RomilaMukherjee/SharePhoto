@@ -23,10 +23,11 @@
 <link rel="stylesheet" type="text/css"  href="css/style1.css">
 <link rel="stylesheet" type="text/css" href="css/prettyPhoto.css">
 <link href="http://fonts.googleapis.com/css?family=Open+Sans:400,700,800,600,300" rel="stylesheet" type="text/css">
+	<script src="https://sdk.amazonaws.com/js/aws-sdk-2.1.12.min.js"></script>
 <script type="text/javascript" src="login.js"></script>
-	<script src="https://sdk.amazonaws.com/js/aws-sdk-2.7.16.min.js"></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 	<script src="https://apis.google.com/js/platform.js" async defer></script>
+	
 	
 <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
 <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -85,7 +86,6 @@
         <button type="button" class="btn btn-info btn-lg" align ="left" onclick="window.location.href = 'FollowingUsers.html'">Following</button>
        
         <!-- Upload Snap  -->
-        <div id="results"></div>
                <div class="modal fade" id="myModal" role="dialog" aria-hidden="true">
                     <div class="modal-dialog" id="modaldialog">
     
@@ -102,7 +102,7 @@
                       
                        <img src="" id="profile-img-tag" width="200px"/> 
                        
-                       <button type="button" class="btn btn-info btn-lg" id="upload-button" onclick="uploadPic();">Post</button>  
+                       <button type="button" class="btn btn-info btn-lg" id="upload-button" onclick="uploadPic();" >Post</button>  
                         <div id="results"></div>     
                     </div>
                   <div class="modal-footer">
