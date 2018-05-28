@@ -14,22 +14,22 @@ function onSignIn(googleUser) {
 
   //The ID token you need to pass to your backend:
   var id_token = googleUser.getAuthResponse().id_token;
-  location.replace("Home.html");
-  if(profile != undefined)
-	  {
-	  localStorage.setItem('profile', JSON.stringify(profile)); 
-  window.location.href =  "Home.html";}
-  else
-	  {
-	  window.location.href =  "Home.html";
-  }
- 
-    
-   //Call API to persist the userInformation to DB
-  saveUserProfileToDynamoDB(profile);
   
-	
+  //Call API to persist the userInformation to DB
+  saveUserProfileToDynamoDB(profile);
+ 
+ /*if(profileSaved==true){
+	location.replace("Home.html");
+	  if(profile != undefined){
+		  localStorage.setItem('profile', JSON.stringify(profile)); 
+		  window.location.href =  "Home.html";
+	  }else{
+		  window.location.href =  "Home.html";
+	  }
+
+  }*/
 }
+
 
 function getprofiledetails(){
 	var profilevalue = localStorage.getItem('profile');
@@ -61,7 +61,7 @@ function myFunction() {
  * @param profile
  * @returns
  */
-function saveUserProfileToDynamoDB(profile){
+function  saveUserProfileToDynamoDB(profile){
 	
 	AWS.config.update({
 		  region: "ap-southeast-1",
@@ -91,63 +91,79 @@ function saveUserProfileToDynamoDB(profile){
         ReturnValues:"UPDATED_NEW"
     };
     docClient.update(paramsForUpdate, function(err, data) {
-    	isExistingUser =true;
+    	isExistingUser=false;
         if (err) {
             console.log("Error occurred");
         	isExistingUser =false;
         } else {
             console.log("Update Successful");
             isExistingUser =true;
+            location.replace("Home.html");
+	      	  if(profile != undefined){
+	      		  localStorage.setItem('profile', JSON.stringify(profile)); 
+	      		  window.location.href =  "Home.html";
+	      	  }else{
+	      		  window.location.href =  "Home.html";
+	      	  }
         }
-        
-        if(!isExistingUser){
-    		var paramsForCreate = {
-    		        TableName :"user",
-    		        Item:{
-    		        	"userId":profile.getEmail(),
-    		            "userName":profile.getName(),
-    		            "loginTimeStamp":currentDate,
-    		            "visitCount":1,
-    		            "userProfile":profile.getImageUrl(),
-    		            "followers" : [ {
-    						"userName" : "Romila Mukherjee",
-    						"userId" : "ms.romila@gmail. com"
-    					}, {
-    						"userName" : "abc2",
-    						"userId" : "abc2@gmail.com"
-    					}, {
-    						"userName" : "abc3",
-    						"userId" : "abc3@gmail.com"
-    					}, {
-    						"userName" : "abc4",
-    						"userId" : "abc4@gmail.com"
-    					} ],
-    					"following" : [ {
-    						"userName" : "abc5",
-    						"userId" : "abc5@gmail.com"
-    					}, {
-    						"userName" : "abc6",
-    						"userId" : "abc6@gmail.com"
-    					}, {
-    						"userName" : "abc7",
-    						"userId" : "abc7@gmail.com"
-    					}, {
-    						"userName" : "abc8",
-    						"userId" : "abc8@gmail.com"
-    					} ]
-    		         }
-    			};
-    			docClient.put(paramsForCreate, function(err, data) {
-    			      if (err) {
-    			          console.log("Error occurred while saving user profile");
-    			      } else {
-    			    	  console.log("Add item successfully to user profile");
-    			      }
-    			});
-
-    	}
-
     });
+    
+    if(!isExistingUser){
+		var paramsForCreate = {
+		        TableName :"user",
+		        Item:{
+		        	"userId":profile.getEmail(),
+		            "userName":profile.getName(),
+		            "loginTimeStamp":currentDate,
+		            "visitCount":1,
+		            "userProfile":profile.getImageUrl(),
+		            "followers" : [ {
+						"userName" : "Romila Mukherjee",
+						"userId" : "ms.romila@gmail. com"
+					}, {
+						"userName" : "abc2",
+						"userId" : "abc2@gmail.com"
+					}, {
+						"userName" : "abc3",
+						"userId" : "abc3@gmail.com"
+					}, {
+						"userName" : "abc4",
+						"userId" : "abc4@gmail.com"
+					} ],
+					"following" : [ {
+						"userName" : "abc5",
+						"userId" : "abc5@gmail.com"
+					}, {
+						"userName" : "abc6",
+						"userId" : "abc6@gmail.com"
+					}, {
+						"userName" : "abc7",
+						"userId" : "abc7@gmail.com"
+					}, {
+						"userName" : "abc8",
+						"userId" : "abc8@gmail.com"
+					} ]
+		         }
+			};
+			docClient.put(paramsForCreate, function(err, data) {
+			      if (err) {
+			          console.log("Error occurred while saving user profile");
+			      } else {
+			    	  console.log("Add item successfully to user profile");
+			    	  location.replace("Home.html");
+			    	  if(profile != undefined){
+			    		  localStorage.setItem('profile', JSON.stringify(profile)); 
+			    		  window.location.href =  "Home.html";
+			    	  }else{
+			    		  window.location.href =  "Home.html";
+			    	  }
+			      }
+			});
+
+	}
+
+   
+    return true;
  }
 
 
@@ -286,4 +302,15 @@ function uploadPic(){
 	          });
 	      }
 	  });
+  }
+  
+  function searchProfile(searchString){
+	  
+	  var cloudsearch = new AWS.CloudSearch();
+	  cloudsearch.buildSuggesters(params, function (err, data) {
+	    if (err) console.log(err, err.stack); // an error occurred
+	    else     console.log(data);           // successful response
+	  });
+	  
+	  
   }
