@@ -14,22 +14,22 @@ function onSignIn(googleUser) {
 
   //The ID token you need to pass to your backend:
   var id_token = googleUser.getAuthResponse().id_token;
-  location.replace("Home.html");
-  if(profile != undefined)
-	  {
-	  localStorage.setItem('profile', JSON.stringify(profile)); 
-  window.location.href =  "Home.html";}
-  else
-	  {
-	  window.location.href =  "Home.html";
-  }
- 
-    
-   //Call API to persist the userInformation to DB
-  saveUserProfileToDynamoDB(profile);
   
-	
+  //Call API to persist the userInformation to DB
+  saveUserProfileToDynamoDB(profile);
+ 
+ /*if(profileSaved==true){
+	location.replace("Home.html");
+	  if(profile != undefined){
+		  localStorage.setItem('profile', JSON.stringify(profile)); 
+		  window.location.href =  "Home.html";
+	  }else{
+		  window.location.href =  "Home.html";
+	  }
+
+  }*/
 }
+
 
 function getprofiledetails(){
 	var profilevalue = localStorage.getItem('profile');
@@ -61,7 +61,7 @@ function myFunction() {
  * @param profile
  * @returns
  */
-function saveUserProfileToDynamoDB(profile){
+function  saveUserProfileToDynamoDB(profile){
 	
 	AWS.config.update({
 		  region: "ap-southeast-1",
@@ -91,63 +91,79 @@ function saveUserProfileToDynamoDB(profile){
         ReturnValues:"UPDATED_NEW"
     };
     docClient.update(paramsForUpdate, function(err, data) {
-    	isExistingUser =true;
+    	isExistingUser=false;
         if (err) {
             console.log("Error occurred");
         	isExistingUser =false;
         } else {
             console.log("Update Successful");
             isExistingUser =true;
+            location.replace("Home.html");
+	      	  if(profile != undefined){
+	      		  localStorage.setItem('profile', JSON.stringify(profile)); 
+	      		  window.location.href =  "Home.html";
+	      	  }else{
+	      		  window.location.href =  "Home.html";
+	      	  }
         }
-        
-        if(!isExistingUser){
-    		var paramsForCreate = {
-    		        TableName :"user",
-    		        Item:{
-    		        	"userId":profile.getEmail(),
-    		            "userName":profile.getName(),
-    		            "loginTimeStamp":currentDate,
-    		            "visitCount":1,
-    		            "userProfile":profile.getImageUrl(),
-    		            "followers" : [ {
-    						"userName" : "Romila Mukherjee",
-    						"userId" : "ms.romila@gmail. com"
-    					}, {
-    						"userName" : "abc2",
-    						"userId" : "abc2@gmail.com"
-    					}, {
-    						"userName" : "abc3",
-    						"userId" : "abc3@gmail.com"
-    					}, {
-    						"userName" : "abc4",
-    						"userId" : "abc4@gmail.com"
-    					} ],
-    					"following" : [ {
-    						"userName" : "abc5",
-    						"userId" : "abc5@gmail.com"
-    					}, {
-    						"userName" : "abc6",
-    						"userId" : "abc6@gmail.com"
-    					}, {
-    						"userName" : "abc7",
-    						"userId" : "abc7@gmail.com"
-    					}, {
-    						"userName" : "abc8",
-    						"userId" : "abc8@gmail.com"
-    					} ]
-    		         }
-    			};
-    			docClient.put(paramsForCreate, function(err, data) {
-    			      if (err) {
-    			          console.log("Error occurred while saving user profile");
-    			      } else {
-    			    	  console.log("Add item successfully to user profile");
-    			      }
-    			});
-
-    	}
-
     });
+    
+    if(!isExistingUser){
+		var paramsForCreate = {
+		        TableName :"user",
+		        Item:{
+		        	"userId":profile.getEmail(),
+		            "userName":profile.getName(),
+		            "loginTimeStamp":currentDate,
+		            "visitCount":1,
+		            "userProfile":profile.getImageUrl(),
+		            "followers" : [ {
+						"userName" : "Romila Mukherjee",
+						"userId" : "ms.romila@gmail. com"
+					}, {
+						"userName" : "abc2",
+						"userId" : "abc2@gmail.com"
+					}, {
+						"userName" : "abc3",
+						"userId" : "abc3@gmail.com"
+					}, {
+						"userName" : "abc4",
+						"userId" : "abc4@gmail.com"
+					} ],
+					"following" : [ {
+						"userName" : "abc5",
+						"userId" : "abc5@gmail.com"
+					}, {
+						"userName" : "abc6",
+						"userId" : "abc6@gmail.com"
+					}, {
+						"userName" : "abc7",
+						"userId" : "abc7@gmail.com"
+					}, {
+						"userName" : "abc8",
+						"userId" : "abc8@gmail.com"
+					} ]
+		         }
+			};
+			docClient.put(paramsForCreate, function(err, data) {
+			      if (err) {
+			          console.log("Error occurred while saving user profile");
+			      } else {
+			    	  console.log("Add item successfully to user profile");
+			    	  location.replace("Home.html");
+			    	  if(profile != undefined){
+			    		  localStorage.setItem('profile', JSON.stringify(profile)); 
+			    		  window.location.href =  "Home.html";
+			    	  }else{
+			    		  window.location.href =  "Home.html";
+			    	  }
+			      }
+			});
+
+	}
+
+   
+    return true;
  }
 
 
@@ -187,10 +203,10 @@ function readURL(input) {
  */
 
 function uploadPic(){
-	AWS.config.region = 'ap-southeast-1'; // 1. Enter your region
+	AWS.config.region = 'us-east-1'; // 1. Enter your region
 
     AWS.config.credentials = new AWS.CognitoIdentityCredentials({
-      IdentityPoolId: 'ap-southeast-1:7c5663a7-4136-408a-a9ba-5caa4f297aef' // 2. Enter your identity pool
+      IdentityPoolId: 'us-east-1:087ddfbd-715d-4afc-899b-8ac79d68eb91' // 2. Enter your identity pool
     });
 
     AWS.config.credentials.get(function(err) {
@@ -198,7 +214,7 @@ function uploadPic(){
       console.log(AWS.config.credentials);
     });
 
-  var bucketName = 'snap-nus'; // Enter your bucket name
+  var bucketName = 'snapsnus'; // Enter your bucket name
   var bucket = new AWS.S3({
       params: {
           Bucket: bucketName
@@ -208,9 +224,7 @@ function uploadPic(){
   var fileChooser = document.getElementById('file-chooser');
   var button = document.getElementById('upload-button');
   var results = document.getElementById('results');
-  button.addEventListener('click', function() {
-
-      var file = fileChooser.files[0];
+  var file = fileChooser.files[0];
 
       if (file) {
 
@@ -229,13 +243,15 @@ function uploadPic(){
                   results.innerHTML = 'ERROR: ' + err;
               } else {
                   alert("Image uploaded successfully!");
+                  DetectLabels(bucketName,bucket,useremail + '/' + file.name);
               }
           });
       } else {
           results.innerHTML = 'Nothing to upload.';
       }
-  }, false);
-
+   
+      
+              
   $('#modaldialog').hide(); 
 
 }
@@ -256,6 +272,77 @@ function uploadPic(){
           }
       });
   }
+  
+  // Machine Learning APi to get preferences of the image
+  
+  function DetectLabels(bucketname, bucket,key) {
+
+	     var rekognition = new AWS.Rekognition();
+
+	     var params = {
+	         Image: {
+	          S3Object: {
+	           Bucket: bucketname,
+	           Name: key
+	          }
+	         },
+
+	         MaxLabels: 25,
+	         MinConfidence: 70
+
+	        };
+	     rekognition.detectLabels(params, function (err, data) {
+	     if (err) console.log(err, err.stack); // an error occurred
+	     else {
+	       var tags = [];
+	         for (var i = 0; i < data.Labels.length; i++) {    
+	           tags[i] = {Key: "Attribute"+i,Value:data.Labels[i].Name}      
+	         
+	         console.log(data.Labels[i].Name);	         
+	         }
+	         console.log(tags);	 
+	       /*  var params = {
+	          Bucket: bucketname,
+	          Key: key,
+	           Tagging: {
+	           TagSet:tags
+	          }
+	         };*/
+		      var params = {
+		    		  Bucket: 'snapsnus',
+		              Key: key,
+		              Tagging: {
+		               TagSet: [
+		                  {
+		                 Key: "Attribute1",
+		                 Value: "test1"
+		                },
+		                {
+		                	Key:"attr",
+		                	Value:"value1"
+		                }              
+		               ]
+		              }
+		             };	
+	       
+	         bucket.putObjectTagging(params, function(err, data) {
+
+	               if (err) console.log(err, err.stack); // an error occurred
+	               else     console.log(data);           // successful response
+	               /*
+	               data = {
+	                VersionId: "null"
+	               }
+	               */
+	             }); 
+	         
+	     }
+
+	    });
+	     
+
+
+	}
   
   function getImage()
   {
@@ -289,4 +376,15 @@ function uploadPic(){
 	          });
 	      }
 	  });
+  }
+  
+  function searchProfile(searchString){
+	  
+	  var cloudsearch = new AWS.CloudSearch();
+	  cloudsearch.buildSuggesters(params, function (err, data) {
+	    if (err) console.log(err, err.stack); // an error occurred
+	    else     console.log(data);           // successful response
+	  });
+	  
+	  
   }
