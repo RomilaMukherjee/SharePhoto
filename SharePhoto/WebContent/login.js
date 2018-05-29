@@ -203,10 +203,10 @@ function readURL(input) {
  */
 
 function uploadPic(){
-	AWS.config.region = 'ap-southeast-1'; // 1. Enter your region
+	AWS.config.region = 'us-east-1'; // 1. Enter your region
 
     AWS.config.credentials = new AWS.CognitoIdentityCredentials({
-      IdentityPoolId: 'ap-southeast-1:7c5663a7-4136-408a-a9ba-5caa4f297aef' // 2. Enter your identity pool
+      IdentityPoolId: 'us-east-1:087ddfbd-715d-4afc-899b-8ac79d68eb91' // 2. Enter your identity pool
     });
 
     AWS.config.credentials.get(function(err) {
@@ -214,7 +214,7 @@ function uploadPic(){
       console.log(AWS.config.credentials);
     });
 
-  var bucketName = 'snap-nus'; // Enter your bucket name
+  var bucketName = 'snapsnus'; // Enter your bucket name
   var bucket = new AWS.S3({
       params: {
           Bucket: bucketName
@@ -243,12 +243,15 @@ function uploadPic(){
                   results.innerHTML = 'ERROR: ' + err;
               } else {
                   alert("Image uploaded successfully!");
+                  DetectLabels(bucketName,bucket,useremail + '/' + file.name);
               }
           });
       } else {
           results.innerHTML = 'Nothing to upload.';
       }
-
+   
+      
+              
   $('#modaldialog').hide(); 
 
 }
@@ -269,6 +272,77 @@ function uploadPic(){
           }
       });
   }
+  
+  // Machine Learning APi to get preferences of the image
+  
+  function DetectLabels(bucketname, bucket,key) {
+
+	     var rekognition = new AWS.Rekognition();
+
+	     var params = {
+	         Image: {
+	          S3Object: {
+	           Bucket: bucketname,
+	           Name: key
+	          }
+	         },
+
+	         MaxLabels: 25,
+	         MinConfidence: 70
+
+	        };
+	     rekognition.detectLabels(params, function (err, data) {
+	     if (err) console.log(err, err.stack); // an error occurred
+	     else {
+	       var tags = [];
+	         for (var i = 0; i < data.Labels.length; i++) {    
+	           tags[i] = {Key: "Attribute"+i,Value:data.Labels[i].Name}      
+	         
+	         console.log(data.Labels[i].Name);	         
+	         }
+	         console.log(tags);	 
+	       /*  var params = {
+	          Bucket: bucketname,
+	          Key: key,
+	           Tagging: {
+	           TagSet:tags
+	          }
+	         };*/
+		      var params = {
+		    		  Bucket: 'snapsnus',
+		              Key: key,
+		              Tagging: {
+		               TagSet: [
+		                  {
+		                 Key: "Attribute1",
+		                 Value: "test1"
+		                },
+		                {
+		                	Key:"attr",
+		                	Value:"value1"
+		                }              
+		               ]
+		              }
+		             };	
+	       
+	         bucket.putObjectTagging(params, function(err, data) {
+
+	               if (err) console.log(err, err.stack); // an error occurred
+	               else     console.log(data);           // successful response
+	               /*
+	               data = {
+	                VersionId: "null"
+	               }
+	               */
+	             }); 
+	         
+	     }
+
+	    });
+	     
+
+
+	}
   
   function getImage()
   {
