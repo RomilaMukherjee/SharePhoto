@@ -30,8 +30,11 @@ AWS.config.credentials = new AWS.CognitoIdentityCredentials({
 });
 
 var docClient = new AWS.DynamoDB.DocumentClient();
+//var profile = googleUser.getBasicProfile();
 
 function readItem(a) {
+//	getFollowersList();
+//	getFollowingList();
 	condition = "";
 	if (a) {
 		condition = "following";
@@ -42,8 +45,10 @@ function readItem(a) {
 	var params = {
 		TableName : "user",
 		Key : {
-			"userId" : "hersom179@gmail.com",
-			"userName" : "royal hersom"
+			"userId" : "ms.romila@gmail.com",
+			"userName" : "Romila Mukherjee"
+//			"userId" : "hersom179@gmail.com",
+//			"userName" : "royal hersom"
 		},
 		ProjectionExpression : condition
 
@@ -157,6 +162,67 @@ function showOnUI(data, condition) {
 
 }
 
+function getFollowersList(){
+	var params = {
+		TableName : "user",
+		Key : {
+			"userId" : "ms.romila@gmail.com",
+			"userName" : "Romila Mukherjee"
+//			"userId" : "hersom179@gmail.com",
+//			"userName" : "royal hersom"
+		},
+		ProjectionExpression : "followers"
+
+	};
+	docClient
+			.get(
+					params,
+					function(err, data) {
+						if (err) {
+							document.getElementById('textarea').innerHTML = "Unable to read item: "
+									+ "\n" + JSON.stringify(err, undefined, 2);
+						} else {
+
+							followersList = data;
+								//JSON.stringify(data, undefined, 2);
+						}
+					});
+	
+//	    var val = "ms.romila@gmail.com"
+//		var index = followersList.Item.followers.findIndex(function(item, i){
+//		  return item.userId === val
+//		});
+
+//		console.log(followersList);
+//	var followers = JSON.parse(followersList);
+//	var index = labels.indexOf('ms.romila@gmail.com');
+}
+function getFollowingList(){
+	var params = {
+		TableName : "user",
+		Key : {
+			"userId" : "ms.romila@gmail.com",
+			"userName" : "Romila Mukherjee"
+//			"userId" : "hersom179@gmail.com",
+//			"userName" : "royal hersom"
+		},
+		ProjectionExpression : "following"
+
+	};
+	docClient
+			.get(
+					params,
+					function(err, data) {
+						if (err) {
+							document.getElementById('textarea').innerHTML = "Unable to read item: "
+									+ "\n" + JSON.stringify(err, undefined, 2);
+						} else {
+
+							followersList = JSON.stringify(data, undefined, 2);
+						}
+					});
+}
+
 function getFollowing() {
 	readItem(true);
 }
@@ -170,31 +236,28 @@ function follow(button_id) {
 	var nameId = "div_name" + idNo;
 	var emailId = "userId" + idNo;
 	document.getElementById(button_id).style.color = "red";
-	if(document.getElementById(button_id).innerText == "Follow" ){ // "Follow"
+	if(document.getElementById(button_id).innerText == "Follow" ){ 
 		document.getElementById(button_id).innerText = "Unfollow";
-		//alert(document.getElementById(nameId).innerText);
-		AddToFollowers(document.getElementById(nameId).innerText);
+		AddToFollowing(document.getElementById(nameId).innerText,document.getElementById(emailId).innerText);
 		}else{
 		document.getElementById(button_id).innerText = "Follow add";
-		removeFromFollowers(document.getElementById(nameId).innerText,document.getElementById(emailId).innerText);		
+		removeFromFollowers(document.getElementById(nameId).innerText,document.getElementById(emailId).innerText,idNo);		
 	}
-	
-	alert(name);
 }
 
-function removeFromFollowers(Name , email){
-	alert("To Remove is" + Name);
-	alert("with Email Id" + email);
-	
+/* This Function Removes the User Name and User Id from the followers list of the one logged in person unfollow 
+ * Return : Nothing
+ */
+function removeFromTheirFollowers(Name , email, No){
 	var params = {
 			  TableName : 'user',
 			  Key: {
-				  "userId" : "hersom179@gmail.com",
-				  "userName" : "royal hersom"
+				  "userId" : email,
+				  "userName" : Name
 				},
-				ConditionExpression: "followers[3].userId = :name",
-				UpdateExpression: "remove followers[3]",
-				ExpressionAttributeValues: { ':name': email }
+				ConditionExpression: "followers["+No+"].userId = :name",
+				UpdateExpression: "remove followers["+No+"]",
+				ExpressionAttributeValues: { ":name": email  }
 		    };
 			console.log("Attempting a conditional delete...");
 			docClient.update(params, function(err, data) {
@@ -204,52 +267,83 @@ function removeFromFollowers(Name , email){
 			        console.log("DeleteItem succeeded:", JSON.stringify(data, null, 2));
 			    }
 			});
-			
+		//Add the to Following
 }
 
-function AddToFollowers(){
+function removeFromFollowers(Name , email, No){
+	array = [{"userName":Name,"userId":email}];
+	var params = {
+			  TableName : 'user',
+			  Key: {
+//				  "userId" : "hersom179@gmail.com",
+//				  "userName" : "royal hersom"
+				  "userId" : "ms.romila@gmail.com",
+				  "userName" : "Romila Mukherjee"
+				},
+//				ConditionExpression: "following["+No+"].userId = :name",
+//
+//				UpdateExpression: "remove following["+No+"]",
+				UpdateExpression: "remove followers.name",
+				//data.Fruits = data.Fruits.filter(val => ((val.Name == "name" && val.family != "C") ||  (val.Name != "name" && val.family == "C")));
+				//UpdateExpression: "followers = followers.filter(val=>(userId = :name))",
+				//UpdateExpression: "remove followers WHERE userId = :name",
+				ExpressionAttributeValues: { ":name": email  }
+				//ExpressionAttributeValues: { ":array": array  }
+		    };
+			console.log("Attempting a conditional delete...");
+			docClient.update(params, function(err, data) {
+			    if (err) {
+			        console.error("Unable to delete item. Error JSON:", JSON.stringify(err, null, 2));
+			    } else {
+			        console.log("DeleteItem succeeded:", JSON.stringify(data, null, 2));
+			    }
+			});
+		//Add the to Following
+}
 
-	//var docClient = new AWS.DynamoDB.DocumentClient();
-	
-
-
-	//var AWS = require('aws-sdk')
+function AddToFollowing(name,emailID){
+	AddToTheirFollowers(name,emailID);
 	var DB = new AWS.DynamoDB.DocumentClient()
-	//var res = str.substr(7, 6);
 	var table = "user";
-    
-	//var paramsForUpdate = {
 	return DB.update({
         TableName:table,
         Key:{
-        	"userId" : "hersom179@gmail.com",
-			"userName" : "royal hersom"
+        	"userId" : "ms.romila@gmail.com",
+			"userName" : "Romila Mukherjee"
+//        	"userId" : "hersom179@gmail.com",
+//			"userName" : "royal hersom"
+//            "userId": profile.getEmail(),
+//            "userName":profile.getName()
+        },
+        ReturnValues: 'ALL_NEW',
+        UpdateExpression: 'set following = list_append(if_not_exists(following, :empty_list), :array)',
+        ExpressionAttributeValues: {
+            ':array': [{"userName":name,"userId":emailID}],
+            ':empty_list': []
+          }
+    }).promise()
+    
+    
+}
+
+function AddToTheirFollowers(name,emailID){
+	var DB = new AWS.DynamoDB.DocumentClient()
+	var table = "user";
+	return DB.update({
+        TableName:table,
+        Key:{
+        	"userId" : emailID,
+			"userName" : name
 //            "userId": profile.getEmail(),
 //            "userName":profile.getName()
         },
         ReturnValues: 'ALL_NEW',
         UpdateExpression: 'set followers = list_append(if_not_exists(followers, :empty_list), :array)',
         ExpressionAttributeValues: {
-            ':array': [{"userName":"KiraTest1","userId":"Kira@test.email"}],
+            ':array': [{"userName":profile.getEmail(),"userId":profile.getName()}],
             ':empty_list': []
-          } 
-//        UpdateExpression: "set followers[2].userId = :name",
-//        ExpressionAttributeValues:{":name":"KERAN"},
-//        ReturnValues:"UPDATED_NEW"
-//        UpdateExpression: "set followers = :array",
-//        ExpressionAttributeValues:{":array":[{"userName":"Kira","userId":"Kira@test.email"}]},
-//        ReturnValues:"UPDATED_NEW"
+          }
     }).promise()
-//    docClient.update(paramsForUpdate, function(err, data) {
-//    	isExistingUser =true;
-//        if (err) {
-//            console.log("Error occurred",JSON.stringify(err, null, 2));
-//        	isExistingUser =false;
-//        } else {
-//            console.log("Update Successful");
-//            isExistingUser =true;
-//        }
-//    });
 }
 
 function addElement(parentId, elementTag, elementId, html) {
