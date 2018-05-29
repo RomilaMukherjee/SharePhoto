@@ -297,33 +297,14 @@ function uploadPic(){
 	       var tags = [];
 	         for (var i = 0; i < data.Labels.length; i++) {    
 	           tags[i] = {Key: "Attribute"+i,Value:data.Labels[i].Name}      
-	         
-	         console.log(data.Labels[i].Name);	         
 	         }
-	         console.log(tags);	 
-	       /*  var params = {
+	         var params = {
 	          Bucket: bucketname,
 	          Key: key,
 	           Tagging: {
 	           TagSet:tags
 	          }
-	         };*/
-		      var params = {
-		    		  Bucket: 'snapsnus',
-		              Key: key,
-		              Tagging: {
-		               TagSet: [
-		                  {
-		                 Key: "Attribute1",
-		                 Value: "test1"
-		                },
-		                {
-		                	Key:"attr",
-		                	Value:"value1"
-		                }              
-		               ]
-		              }
-		             };	
+	         };
 	       
 	         bucket.putObjectTagging(params, function(err, data) {
 
