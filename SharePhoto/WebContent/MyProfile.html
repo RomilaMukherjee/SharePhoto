@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="google-signin-scope" content="profile email">
+<meta name="google-signin-client_id"
+	content="953824955503-uvkn12ucjhtqv9mkilufek8lec8isj90.apps.googleusercontent.com">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="stylesheet"
+	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<link rel = "stylesheet" type="text/css" href="css/style.css"></link>
+<script
+	src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+<script
+	src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script
+	src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<title>Welcome to world of Share Photo</title>
+
+<script type="text/javascript" src="login.js"></script>
+<script src="https://apis.google.com/js/platform.js" async defer></script>
+
+
+<style>
+.data {
+	display: none;
+}
+
+.gallery{
+	margin: 10px 50px;
+}
+.gallery img{
+	width: 230px;
+	padding: 5px;
+	filter: grayscale(0%);
+	transition : ls;
+}
+.gallery img:hover{
+	
+	transform: scale(1.1);
+}
+
+#imgID {
+    border-radius: 5px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    padding-top: 100px; /* Location of the box */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.9); /* Black w/ opacity */
+}
+/* Modal Content (image) */
+.modal-content {
+    margin: auto;
+    display: block;
+    width: 80%;
+    max-width: 700px;
+}
+.modal-content, #caption { 
+    animation-name: zoom;
+    animation-duration: 0.6s;
+}
+
+@keyframes zoom {
+    from {transform:scale(0)} 
+    to {transform:scale(1)}
+}
+
+.close {
+    position: absolute;
+    top: 15px;
+    right: 35px;
+    color: #f1f1f1;
+    font-size: 40px;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+.close:hover,
+.close:focus {
+    color: #bbb;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.modal-content{    
+    -webkit-animation-name: zoom;
+    -webkit-animation-duration: 0.6s;
+    animation-name: zoom;
+    animation-duration: 0.6s;
+}
+/
+@media only screen and (max-width: 700px){
+    .modal-content {
+        width: 100%;
+    }
+}
+</style>
+
+</head>
+<body>
+	<div class="jumbotron text-center">
+		<div id="button_div" align="right">
+			<button type="button" class="btn btn-default" onclick="signOut()">Signout</button>
+		</div>
+		<h1>My Page</h1>
+	</div>
+	<div class="container">
+
+		<div class="row">
+			<div class="col-sm-12" align="center">
+				<div class="g-signin2" data-onsuccess="onSignIn"></div>
+			</div>
+		</div>
+
+		<div class="data">
+			<div class="row">
+
+				<div class="col-sm-3 well">
+					<p>My Profile</p>
+					<a href="MyProfile.html"> <img id="profilePic"
+						class="img-circle" width="100" height="100">
+						<p id="pName" class="alert alert danger"></p>
+					</a>
+
+					<div class="well">
+						<p>
+							<a href="#">Interests</a>
+						</p>
+						<p>
+							<span class="label label-default">News</span> <span
+								class="label label-primary">W3Schools</span> <span
+								class="label label-success">Labels</span> <span
+								class="label label-info">Football</span> <span
+								class="label label-warning">Gaming</span> <span
+								class="label label-danger">Friends</span>
+						</p>
+					</div>
+
+					<div class="alert alert-success fade in">
+						<a href="#" class="close" data-dismiss="alert" aria-label="close">×</a>
+						<p>
+							<strong>Ey!</strong>
+						</p>
+						People are looking at your profile. Find out <a href="#">who.</a>
+					</div>
+
+					<p>
+						<a href="#">Link</a>
+					</p>
+					<p>
+						<a href="#">Link</a>
+					</p>
+					<p>
+						<a href="#">Link</a>
+					</p>
+				</div>
+				
+				<div class = "gallery">
+				<button>Delete</button>
+				<img id="imgID" src = "Images/800px_COLOURBOX1198771.jpg"> 
+				<a href = "Images/1200-27449799-yellow-mango.jpg" ><img id="imgID" src = "Images/1200-27449799-yellow-mango.jpg"></a>
+				<a href = "Images/475058135.jpg" ><img  id="imgID" src = "Images/475058135.jpg"></a>
+				<a href = "Images/images (1).jpg" ><img id="imgID" src = "Images/images (1).jpg"></a>
+				<a href = "Images/images (2).jpg" ><img id="imgID" src = "Images/images (2).jpg"></a>
+				<a href = "Images/images.jpg" ><img id="imgID" src = "Images/images.jpg"></a>
+				<a href = "Images/maxresdefault.jpg" ><img id="imgID" src = "Images/maxresdefault.jpg"></a>
+				<a href = "Images/What-About-Other-Fruits.jpg" ><img id="imgID" src = "Images/What-About-Other-Fruits.jpg"></a>
+				<a href = "Images/800px_COLOURBOX1198771.jpg" ><img id="imgID" src = "Images/800px_COLOURBOX1198771.jpg"></a>
+				<a href = "Images/1200-27449799-yellow-mango.jpg" ><img id="imgID" src = "Images/1200-27449799-yellow-mango.jpg"></a>
+				
+				<div id="myModal" class="modal">
+  					<span class="close">&times;</span>
+  					<img class="modal-content" id="img01">
+  					<div id="caption"></div>
+				</div>
+				</div>
+				
+			</div>
+			</div>
+		</div>
+
+
+</body>
+</html>
