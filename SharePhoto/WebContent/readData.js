@@ -39,6 +39,16 @@ var following;
  * Reads the Item from the Dynamo DB
  */
 function readItem(a) {
+	AWS.config.update({
+		region : "ap-southeast-1",
+	});
+
+	AWS.config.credentials = new AWS.CognitoIdentityCredentials({
+		IdentityPoolId : "ap-southeast-1:af3ff7b8-a334-4e0c-b2df-5dfdf4046147",
+		RoleArn : "arn:aws:iam::163612915076:role/Cognito_TeamShareUnauth_Role"
+	});
+
+	var docClient = new AWS.DynamoDB.DocumentClient();
 	condition = "";
 	if (a) {
 		condition = "following";
@@ -165,51 +175,102 @@ function showOnUI(data, condition) {
 	document.write("<\/html>");
 
 }
+function demo(){
+	AWS.config.update({
+		region : "ap-southeast-1",
+	});
+
+	AWS.config.credentials = new AWS.CognitoIdentityCredentials({
+		IdentityPoolId : "ap-southeast-1:af3ff7b8-a334-4e0c-b2df-5dfdf4046147",
+		RoleArn : "arn:aws:iam::163612915076:role/Cognito_TeamShareUnauth_Role"
+	});
+
+	var dynamodb = new AWS.DynamoDB();
+	var docClient = new AWS.DynamoDB.DocumentClient();
+	
+	var params = {
+			TableName : "user",
+			Key : {
+//				"userId" : pUserID,
+//				"userName" : pUserName
+				"userId" : "ms.romila@gmail.com",
+				"userName" : "Romila Mukherjee"
+			},
+			ProjectionExpression : "followers"
+//			ReturnValues: 'ALL_NEW',
+
+		};
+	docClient.get(params,function(err,data){
+		if(err){
+			console.log(err);
+		}else{
+			console.log(data);
+		}
+	})
+}
 /* Function Name : getIndex 
  * Return type : Int
  * retrieve followers / following from the dynamo db, validates for the email and return index.
  */
 function getIndex(pToCheckId,pProjectionExpression,pUserID,pUserName){
 	//getIndex(email,"followers","ms.romila@gmail.com","Romila Mukherjee");
+	AWS.config.update({
+		region : "ap-southeast-1",
+	});
+
+	AWS.config.credentials = new AWS.CognitoIdentityCredentials({
+		IdentityPoolId : "ap-southeast-1:af3ff7b8-a334-4e0c-b2df-5dfdf4046147",
+		RoleArn : "arn:aws:iam::163612915076:role/Cognito_TeamShareUnauth_Role"
+	});
+
+	var dynamodb = new AWS.DynamoDB();
+	var docClient = new AWS.DynamoDB.DocumentClient();
 	var followList;
 	var index = -1;
 	var params = {
 		TableName : "user",
 		Key : {
-			"userId" : pUserID,
-			"userName" : pUserName
+//			"userId" : pUserID,
+//			"userName" : pUserName
+			"userId" : "ms.romila@gmail.com",
+			"userName" : "Romila Mukherjee"
 		},
-		ProjectionExpression : pProjectionExpression
+		ProjectionExpression : pProjectionExpression,
+		ReturnValues: 'ALL_NEW',
 
 	};
-	docClient
-			.get(
-					params,
-					function(err, data) {
-						if (err) {
-							document.getElementById('textarea').innerHTML = "Unable to read item: "
-									+ "\n" + JSON.stringify(err, undefined, 2);
-						} else {
 
-							followList = data;
-								//JSON.stringify(data, undefined, 2);
-							index = index(data);
-						}
-					});
-	
-	
-	
+	docClient.get(params, function(err, data){
+	  if(err){
+		 console.log(err);
+	  } 
+	  else{
+		  console.log(data);
+		  for (i = 0; i < data.length; i++) {
+				if(data.Item.followers[i].userId == pToCheckId){
+					return i;
+					break
+				}
+			}	
+	  }
+	});
 	return index;
 }
-function index(data){
-	var i;
+
+
+
+//$( document ).ready(
+function DBindex(data){
+	var ind;
 		for (i = 0; i < data.length; i++) {
-			if(data[i].userId == pToCheckId){
+			if(data.Item.followers[i].userId == pToCheckId){
+				ind=i;
 				break
 			}
 		}
-	return i;
+	return ind;
 }
+//);
 
 function getFollowing() {
 	readItem(true);
@@ -240,16 +301,18 @@ function follow(button_id) {
  */
 function removeFromTheirFollowers(pToRemove, Name , email){
 	//removeFromTheirFollowers("ms.romila@gmail.com",Name,email);
-	var DBIndex = getIndex(pToRemove,"followers",email,Name);
-	if(DBIndex != -1){
+	demo();
+	var DBIndex = "";
+		//getIndex(pToRemove,"followers",email,Name);
+	if(DBIndex != undefined && DBIndex >= 0){
 		var params = {
 				  TableName : 'user',
 				  Key: {
 					  "userId" : email,
 					  "userName" : Name
 					},
-					ConditionExpression: "followers[" +DBIndex+ "].userId = :name",
-					UpdateExpression: "remove followers[" +DBIndex+ "]",
+					ConditionExpression: "followers[" + DBIndex + "].userId = :name",
+					UpdateExpression: "remove followers[" + DBIndex + "]",
 					ExpressionAttributeValues: { ":name": email  }
 			    };
 				console.log("Attempting a conditional delete...");
@@ -261,7 +324,7 @@ function removeFromTheirFollowers(pToRemove, Name , email){
 				    }
 				});
 	}else{
-		 console.error("DBIndex = -1");
+		 console.log("DBIndex undefined");
 		  
 	}
 	
@@ -274,9 +337,11 @@ function removeFromTheirFollowers(pToRemove, Name , email){
  */
 function removeFromFollowing(Name , email, No){
 	//TODO : 3rd and 4th param to be profile.getuserid...
-	var DBIndex = getIndex(email,"following","ms.romila@gmail.com","Romila Mukherjee");
+	var DBIndex = "";
+	demo();
+	//DBIndex = getIndex(email,"following","ms.romila@gmail.com","Romila Mukherjee");
 	//pass email to check/Remove , Followers / Following , Account NAme & Email ID
-	if(DBIndex != -1){
+	if(DBIndex != undefined){
 			var params = {
 			  TableName : 'user',
 			  Key: {
@@ -286,9 +351,9 @@ function removeFromFollowing(Name , email, No){
 				  "userId" : "ms.romila@gmail.com",
 				  "userName" : "Romila Mukherjee"
 				},
-				ConditionExpression: "following[" +DBIndex+ "].userId = :name",
+				ConditionExpression: "following[" + DBIndex + "].userId = :name",
 
-				UpdateExpression: "remove following[" +DBIndex+ "]",
+				UpdateExpression: "remove following[" + DBIndex + "]",
 				ExpressionAttributeValues: { ":name": email  }
 		    };
 			console.log("Attempting a conditional delete...");
@@ -303,7 +368,7 @@ function removeFromFollowing(Name , email, No){
 			//send our email id,their username & Email
 			removeFromTheirFollowers("ms.romila@gmail.com",Name,email);
 	}else{
-		console.error("Unable to delete item. Error JSON:", JSON.stringify(err, null, 2));
+		console.log("Undefined Error with Index");
 		  
 	}
 			 
