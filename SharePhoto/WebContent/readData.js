@@ -191,14 +191,10 @@ function demo(){
 	var params = {
 			TableName : "user",
 			Key : {
-//				"userId" : pUserID,
-//				"userName" : pUserName
 				"userId" : "ms.romila@gmail.com",
 				"userName" : "Romila Mukherjee"
 			},
 			ProjectionExpression : "followers"
-//			ReturnValues: 'ALL_NEW',
-
 		};
 	docClient.get(params,function(err,data){
 		if(err){
@@ -212,8 +208,8 @@ function demo(){
  * Return type : Int
  * retrieve followers / following from the dynamo db, validates for the email and return index.
  */
-function getIndex(pToCheckId,pProjectionExpression,pUserID,pUserName){
-	//getIndex(email,"followers","ms.romila@gmail.com","Romila Mukherjee");
+function getIndex(pToCheckId,pProjectionExpression,pUserID,pUserName,unfollowName){
+	// My Following : getIndex(document.getElementById(emailId).innerText,"following","ms.romila@gmail.com","Romila Mukherjee");
 	AWS.config.update({
 		region : "ap-southeast-1",
 	});
@@ -230,28 +226,35 @@ function getIndex(pToCheckId,pProjectionExpression,pUserID,pUserName){
 	var params = {
 		TableName : "user",
 		Key : {
-//			"userId" : pUserID,
-//			"userName" : pUserName
-			"userId" : "ms.romila@gmail.com",
-			"userName" : "Romila Mukherjee"
+			"userId" : pUserID,
+			"userName" : pUserName
 		},
 		ProjectionExpression : pProjectionExpression,
 		ReturnValues: 'ALL_NEW',
 
 	};
-
 	docClient.get(params, function(err, data){
 	  if(err){
 		 console.log(err);
 	  } 
 	  else{
 		  console.log(data);
-		  for (i = 0; i < data.length; i++) {
-				if(data.Item.followers[i].userId == pToCheckId){
-					return i;
-					break
+		  if(pProjectionExpression == "following"){
+			  for (i = 0; i < data.Item.following.length; i++) {
+					if(data.Item.following[i].userId == pToCheckId){
+						removeFromFollowing(i,pToCheckId,unfollowName);
+						break
+					}
 				}
-			}	
+		  }else{
+			  for (i = 0; i < data.Item.followers.length; i++) {
+					if(data.Item.followers[i].userId == pToCheckId){
+						removeFromTheirFollowers(i,pUserID,pUserName);
+						break
+					}
+				}
+		  }
+		 	
 	  }
 	});
 	return index;
@@ -259,7 +262,6 @@ function getIndex(pToCheckId,pProjectionExpression,pUserID,pUserName){
 
 
 
-//$( document ).ready(
 function DBindex(data){
 	var ind;
 		for (i = 0; i < data.length; i++) {
@@ -290,8 +292,9 @@ function follow(button_id) {
 		AddToFollowing(document.getElementById(nameId).innerText,document.getElementById(emailId).innerText);
 		}else{
 		document.getElementById(button_id).innerText = "Follow add";
-		removeFromFollowing(document.getElementById(nameId).innerText,document.getElementById(emailId).innerText,idNo);		
-	}
+		//Call getIndex() -> Email Id the Unfollow,followers/following our mail Id and name
+		getIndex(document.getElementById(emailId).innerText,"following","ms.romila@gmail.com","Romila Mukherjee",document.getElementById(nameId).innerText);
+		}
 }
 
 
@@ -299,34 +302,24 @@ function follow(button_id) {
 /* Function : removeFromTheirFollowers
  * This Function Removes the User Name and User Id from the followers list of the one logged in person unfollow 
  */
-function removeFromTheirFollowers(pToRemove, Name , email){
+function removeFromTheirFollowers(index, pID , pName){
 	//removeFromTheirFollowers("ms.romila@gmail.com",Name,email);
-	demo();
-	var DBIndex = "";
-		//getIndex(pToRemove,"followers",email,Name);
-	if(DBIndex != undefined && DBIndex >= 0){
 		var params = {
 				  TableName : 'user',
 				  Key: {
-					  "userId" : email,
-					  "userName" : Name
+					  "userId" : pID,
+					  "userName" : pName
 					},
-					ConditionExpression: "followers[" + DBIndex + "].userId = :name",
-					UpdateExpression: "remove followers[" + DBIndex + "]",
-					ExpressionAttributeValues: { ":name": email  }
+					UpdateExpression: "remove followers[" + index + "]"
 			    };
 				console.log("Attempting a conditional delete...");
 				docClient.update(params, function(err, data) {
 				    if (err) {
-				        console.error("Unable to delete item. Error JSON:", JSON.stringify(err, null, 2));
+				        console.error("Their Followers : Unable to delete item. Error JSON:", JSON.stringify(err, null, 2));
 				    } else {
-				        console.log("DeleteItem succeeded:", JSON.stringify(data, null, 2));
+				        console.log("DeleteItem succeeded from their Followers:", JSON.stringify(data, null, 2));
 				    }
 				});
-	}else{
-		 console.log("DBIndex undefined");
-		  
-	}
 	
 }
 
@@ -335,43 +328,27 @@ function removeFromTheirFollowers(pToRemove, Name , email){
 /*Function : removeFromFollowing
  * On click Unfollow Remove the user from the logged in user's followers list
  */
-function removeFromFollowing(Name , email, No){
-	//TODO : 3rd and 4th param to be profile.getuserid...
-	var DBIndex = "";
-	demo();
-	//DBIndex = getIndex(email,"following","ms.romila@gmail.com","Romila Mukherjee");
-	//pass email to check/Remove , Followers / Following , Account NAme & Email ID
-	if(DBIndex != undefined){
+function removeFromFollowing(index,userId,userName){
+//	//DBIndex = getIndex(email,"following","ms.romila@gmail.com","Romila Mukherjee");
+//	//pass email to check/Remove , Followers / Following , Account NAme & Email ID
 			var params = {
 			  TableName : 'user',
 			  Key: {
 				  //TODO : To be profile.getuserid...
-//				  "userId" : "hersom179@gmail.com",
-//				  "userName" : "royal hersom"
 				  "userId" : "ms.romila@gmail.com",
 				  "userName" : "Romila Mukherjee"
 				},
-				ConditionExpression: "following[" + DBIndex + "].userId = :name",
-
-				UpdateExpression: "remove following[" + DBIndex + "]",
-				ExpressionAttributeValues: { ":name": email  }
+				UpdateExpression: "remove following[" + index + "]"
 		    };
 			console.log("Attempting a conditional delete...");
 			docClient.update(params, function(err, data) {
 			    if (err) {
-			        console.error("Unable to delete item. Error JSON:", JSON.stringify(err, null, 2));
+			        console.error("Following : Unable to delete item. Error JSON:", JSON.stringify(err, null, 2));
 			    } else {
-			        console.log("DeleteItem succeeded:", JSON.stringify(data, null, 2));
+			        console.log(" Following : DeleteItem succeeded:", JSON.stringify(data, null, 2));
+			        getIndex("ms.romila@gmail.com","followers",userId,userName,"Romila Mukherjee");
 			    }
 			});
-			//TODO : Call Method  removeFromTheirFollowers ();
-			//send our email id,their username & Email
-			removeFromTheirFollowers("ms.romila@gmail.com",Name,email);
-	}else{
-		console.log("Undefined Error with Index");
-		  
-	}
-			 
 }
 
 
@@ -385,12 +362,6 @@ function AddToFollowing(name,emailID){
         Key:{
         	"userId" : "ms.romila@gmail.com",
 			"userName" : "Romila Mukherjee"
-//        	"userId" : "sharanyamenon0592@gmail.com",
-//			"userName" : "Sharanya Menon"
-//        	"userId" : "hersom179@gmail.com",
-//			"userName" : "royal hersom"
-//            "userId": profile.getEmail(),
-//            "userName":profile.getName()
         },
         ReturnValues: 'ALL_NEW',
         UpdateExpression: 'set following = list_append(if_not_exists(following, :empty_list), :array)',
@@ -414,8 +385,6 @@ function AddToTheirFollowers(name,emailID){
         Key:{
         	"userId" : emailID,
 			"userName" : name
-//            "userId": profile.getEmail(),
-//            "userName":profile.getName()
         },
         ReturnValues: 'ALL_NEW',
         UpdateExpression: 'set followers = list_append(if_not_exists(followers, :empty_list), :array)',
@@ -424,7 +393,6 @@ function AddToTheirFollowers(name,emailID){
             ':empty_list': []
           }
     }).promise()
-    //TODO : getProfile details in above credentials
 }
 
 
