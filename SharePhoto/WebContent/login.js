@@ -25,6 +25,7 @@ function getprofiledetails(){
 	  $("#profilePic").attr('src',finalvalue.Paa);
 	  $("#pName").text(finalvalue.ig);
 	  useremail= finalvalue.U3;
+	  return finalvalue;
 	  
 }
 
@@ -198,78 +199,58 @@ function readURL(input) {
 /**
  * API to upload Pic to S3
  */
-
 function uploadPic(){
-	AWS.config.region = 'us-east-1'; // 1. Enter your region
+	   AWS.config.region = 'us-east-1'; // Region
+	    AWS.config.credentials = new AWS.CognitoIdentityCredentials({
+	        IdentityPoolId: 'us-east-1:d640cf23-7fca-44bc-9af0-dd362df3b1c9',
+	    });
 
-    AWS.config.credentials = new AWS.CognitoIdentityCredentials({
-      IdentityPoolId: 'us-east-1:087ddfbd-715d-4afc-899b-8ac79d68eb91' // 2. Enter your identity pool
-    });
+ AWS.config.credentials.get(function(err) {
+   if (err) alert(err);
+   console.log(AWS.config.credentials);
+ });
 
-    AWS.config.credentials.get(function(err) {
-      if (err) alert(err);
-      console.log(AWS.config.credentials);
-    });
+var bucketName = 'snapsnus2'; 
+var bucket = new AWS.S3({
+   params: {
+       Bucket: bucketName
+   }
+});
 
-  var bucketName = 'snapsnus'; // Enter your bucket name
-  var bucket = new AWS.S3({
-      params: {
-          Bucket: bucketName
-      }
-  });
+var fileChooser = document.getElementById('file-chooser');
+var button = document.getElementById('upload-button');
+var file = fileChooser.files[0];
 
-  var fileChooser = document.getElementById('file-chooser');
-  var button = document.getElementById('upload-button');
-  var results = document.getElementById('results');
-  var file = fileChooser.files[0];
+   if (file) {
 
-      if (file) {
+       var objKey = useremail + '/' + file.name;
+       console.log(objKey);
+       var params = {
+           Key: objKey,
+           ContentType: file.type,
+           Body: file,
+           ACL: 'public-read'
+       };
 
-          results.innerHTML = '';
-          var objKey = useremail + '/' + file.name;
-          console.log(objKey);
-          var params = {
-              Key: objKey,
-              ContentType: file.type,
-              Body: file,
-              ACL: 'public-read'
-          };
+       bucket.putObject(params, function(err, data) {
+           if (err) {
+               console.log(err);
+           } else {
+               alert("Image uploaded successfully!");
+               DetectLabels(bucketName,bucket,useremail + '/' + file.name);
+           }
+       });
+   } else {
+       alert('Nothing to upload.');
+   }
 
-          bucket.putObject(params, function(err, data) {
-              if (err) {
-                  results.innerHTML = 'ERROR: ' + err;
-              } else {
-                  alert("Image uploaded successfully!");
-                  DetectLabels(bucketName,bucket,useremail + '/' + file.name);
-              }
-          });
-      } else {
-          results.innerHTML = 'Nothing to upload.';
-      }
    
-      
-              
-  $('#modaldialog').hide(); 
+           
+$('#modaldialog').hide(); 
 
 }
 
-  function listObjs() {
-      var prefix = useremail;
-      bucket.listObjects({
-          Prefix: prefix
-      }, function(err, data) {
-          if (err) {
-              results.innerHTML = 'ERROR: ' + err;
-          } else {
-              var objKeys = "";
-              data.Contents.forEach(function(obj) {
-                  objKeys += obj.Key + "<br>";
-              });
-              results.innerHTML = objKeys;
-          }
-      });
-  }
-  
+ 
 /**
  * API to invoke machine learning inbuilt API for 
  * detecting labels
@@ -329,36 +310,53 @@ function uploadPic(){
 
 	}
   
-  function getImage()
+  /**
+   * API to Get Image List from S3
+   */
+  function getImage(profileid)
   {
-	  AWS.config.region = 'ap-southeast-1'; // 1. Enter your region
+	   AWS.config.region = 'us-east-1'; // Region
 
 	    AWS.config.credentials = new AWS.CognitoIdentityCredentials({
-	      IdentityPoolId: 'ap-southeast-1:7c5663a7-4136-408a-a9ba-5caa4f297aef' // 2. Enter your identity pool
+	        IdentityPoolId: 'us-east-1:d640cf23-7fca-44bc-9af0-dd362df3b1c9',
 	    });
 
 	    AWS.config.credentials.get(function(err) {
 	      if (err) alert(err);
 	      console.log(AWS.config.credentials);
 	    });
+	    
+	    var bucketName = 'snapsnus2';
 	  var s3Bucket = new AWS.S3({
 	      params: {
-	          Bucket: 'snap-nus'
+	          Bucket: bucketName
 	      }
 	  });
-	  var urlParams = {Bucket: 'snap-nus', Key: 'testing'};
-	  s3Bucket.getSignedUrl('getObject', urlParams, function(err, url){
-	    console.log('the url of the image is', url);
-	  })
 	  
-	  var params = {Bucket: 'snap-nus'};
-	  s3Bucket.listObjects(params, function(err, data){
+	  var params = {
+        Bucket: bucketName, 
+        Prefix :profileid
+      };
+	  
+ s3Bucket.listObjects(params, function(err, data) {
+   if (err) console.log(err, err.stack); // an error occurred
+   else     console.log(data);  
+  
+   
+    var curImage = document.getElementById('currentImg');
+	var textDiv = document.getElementById('rightText');	
+	
 	    var bucketContents = data.Contents;
 	      for (var i = 0; i < bucketContents.length; i++){
-	        var urlParams = {Bucket: 'snap-nus', Key: bucketContents[i].Key};
-	          s3.getSignedUrl('getObject',urlParams, function(err, url){
+	        var urlParams = {Bucket: 'snapsnus2', Key: bucketContents[i].Key};
+	        s3Bucket.getSignedUrl('getObject',urlParams, function(err, url){	        	
 	            console.log('the url of the image is', url);
-	          });
+	            curImage.alt=urlParams.Key;
+	            curImage.src=url;
+				rightText.href=url;  
+                rightText.append(curImage);
+                $('#imageview').append(rightText);             
+          	     });	       
 	      }
 	  });
   }
