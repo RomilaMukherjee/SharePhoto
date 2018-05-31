@@ -20,13 +20,10 @@ function viewProfile(name) {
 }
 
 var followersList = "";
-AWS.config.update({
-	region : "ap-southeast-1",
-});
-
+// Initialize the Amazon Cognito credentials provider
+AWS.config.region = 'us-east-1'; // Region
 AWS.config.credentials = new AWS.CognitoIdentityCredentials({
-	IdentityPoolId : "ap-southeast-1:af3ff7b8-a334-4e0c-b2df-5dfdf4046147",
-	RoleArn : "arn:aws:iam::163612915076:role/Cognito_TeamShareUnauth_Role"
+    IdentityPoolId: 'us-east-1:d640cf23-7fca-44bc-9af0-dd362df3b1c9',
 });
 
 var docClient = new AWS.DynamoDB.DocumentClient();
@@ -45,8 +42,8 @@ function readItem(a) {
 	var params = {
 		TableName : "user",
 		Key : {
-			"userId" : "ms.romila@gmail.com",
-			"userName" : "Romila Mukherjee"
+			"userId" : "toshimishra5@gmail.com",
+			"userName" : "Toshi Mishra"
 //			"userId" : "hersom179@gmail.com",
 //			"userName" : "royal hersom"
 		},
@@ -166,8 +163,8 @@ function getFollowersList(){
 	var params = {
 		TableName : "user",
 		Key : {
-			"userId" : "ms.romila@gmail.com",
-			"userName" : "Romila Mukherjee"
+			"userId" : "toshimishra5@gmail.com",
+			"userName" : "Toshi Mishra"
 //			"userId" : "hersom179@gmail.com",
 //			"userName" : "royal hersom"
 		},
@@ -201,8 +198,8 @@ function getFollowingList(){
 	var params = {
 		TableName : "user",
 		Key : {
-			"userId" : "ms.romila@gmail.com",
-			"userName" : "Romila Mukherjee"
+			"userId" : "toshimishra5@gmail.com",
+			"userName" : "Toshi Mishra"
 //			"userId" : "hersom179@gmail.com",
 //			"userName" : "royal hersom"
 		},
@@ -228,6 +225,8 @@ function getFollowing() {
 }
 
 function getFollowers() {
+	//TODO : remove this test call
+	testPrefernces();
 	readItem(false);
 }
 
@@ -277,8 +276,8 @@ function removeFromFollowers(Name , email, No){
 			  Key: {
 //				  "userId" : "hersom179@gmail.com",
 //				  "userName" : "royal hersom"
-				  "userId" : "ms.romila@gmail.com",
-				  "userName" : "Romila Mukherjee"
+				  "userId" : "toshimishra5@gmail.com",
+				  "userName" : "Toshi Mishra"
 				},
 //				ConditionExpression: "following["+No+"].userId = :name",
 //
@@ -308,8 +307,8 @@ function AddToFollowing(name,emailID){
 	return DB.update({
         TableName:table,
         Key:{
-        	"userId" : "ms.romila@gmail.com",
-			"userName" : "Romila Mukherjee"
+        	"userId" : "toshimishra5@gmail.com",
+			"userName" : "Toshi Mishra"
 //        	"userId" : "hersom179@gmail.com",
 //			"userName" : "royal hersom"
 //            "userId": profile.getEmail(),
@@ -361,3 +360,91 @@ function viewProfile(name) {
 	var t = document.getElementById("div_name").innerHTML;
 	alert(t);
 }
+
+var preferences_list = [];
+preferences_list["Car"] = 'true';
+preferences_list["car0"] = 'true';
+function AddToPreferences(attributes)
+{
+var DB = new AWS.DynamoDB.DocumentClient();
+
+var table = "user";
+
+for(var i =0;i<attributes.length;i++)
+{
+  // Add to prefernces only if previoulsy non existent
+  console.log(attributes[i]);
+  if(preferences_list[attributes[i]] != 'true')
+  {
+	   return DB.update({
+	  TableName:table,
+	  Key:{
+		"userId" : "toshimishra5@gmail.com",
+			"userName" : "Toshi Mishra"
+//          "userId" : "hersom179@gmail.com",
+//      "userName" : "royal hersom"
+//            "userId": profile.getEmail(),
+//            "userName":profile.getName()
+	  },
+	  ReturnValues: 'ALL_NEW',
+	  UpdateExpression: 'set preferences = list_append(if_not_exists(preferences, :empty_list), :array)',
+	  ExpressionAttributeValues: {
+		  ':array': [{"Value":attributes[i]}],
+		  ':empty_list': []
+		}
+  }).promise()
+
+  }
+}
+}
+
+function getPrefernces()
+{
+
+var params = {
+    TableName : "user",
+    Key : {
+		"userId" : "toshimishra5@gmail.com",
+		"userName" : "Toshi Mishra"
+//      "userId" : "hersom179@gmail.com",
+//      "userName" : "royal hersom"
+    },
+    ProjectionExpression : "preferences"
+
+  };
+  docClient
+      .get(
+          params,
+          function(err, data) {
+            if (err) {
+            console.log(err);
+            } else {
+              for(var i =0;i<data.Item.preferences.length;i++)
+              {
+                preferences_list[data.Item.preferences[i].Value] = 'true';
+			  }
+			  console.log(preferences_list);
+			  var attr=[];
+			  attr[0] = "Scooter";
+			  AddToPreferences(attr);
+            }
+          });
+
+
+}
+//TODO Remove this test function
+
+function testPrefernces()
+{
+	var attr = [];
+	for(var i =0;i<3;i++)
+	{
+		attr[i] = "car"+i;
+	}
+	//getPrefernces();
+	//AddToPreferences(attr);
+	attr[0] = "Car";
+	AddToPreferences(attr);
+
+}
+

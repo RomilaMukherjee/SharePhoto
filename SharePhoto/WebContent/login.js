@@ -3,6 +3,13 @@
  */
 
 var useremail;
+var following = [];
+var preferences_list = [];
+var recommendation_list =[];
+populatePreferences();
+
+ 
+
 
 function onSignIn(googleUser) {
   var profile = googleUser.getBasicProfile();
@@ -63,13 +70,10 @@ function myFunction() {
  */
 function  saveUserProfileToDynamoDB(profile){
 	
-	AWS.config.update({
-		  region: "ap-southeast-1",
-	});
-	  	
-  	AWS.config.credentials = new AWS.CognitoIdentityCredentials({
-		  IdentityPoolId: "ap-southeast-1:af3ff7b8-a334-4e0c-b2df-5dfdf4046147",
-		  RoleArn: "arn:aws:iam::163612915076:role/Cognito_TeamShareUnauth_Role"
+		// Initialize the Amazon Cognito credentials provider
+	AWS.config.region = 'us-east-1'; // Region
+	AWS.config.credentials = new AWS.CognitoIdentityCredentials({
+		IdentityPoolId: 'us-east-1:d640cf23-7fca-44bc-9af0-dd362df3b1c9',
 	});
   	
   	var dynamodb = new AWS.DynamoDB();
@@ -94,10 +98,69 @@ function  saveUserProfileToDynamoDB(profile){
     	isExistingUser=false;
         if (err) {
             console.log("Error occurred");
-        	isExistingUser =false;
+			isExistingUser =false;
+			if(!isExistingUser){
+		
+				var paramsForCreate = {
+						TableName :"user",
+						Item:{
+							"userId":profile.getEmail(),
+							"userName":profile.getName(),
+							"loginTimeStamp":currentDate,
+							"visitCount":1,
+							"userProfile":profile.getImageUrl(),
+							"followers" : [ {
+								"userName" : "Romila Mukherjee",
+								"userId" : "ms.romila@gmail. com"
+							}, {
+								"userName" : "abc2",
+								"userId" : "abc2@gmail.com"
+							}, {
+								"userName" : "abc3",
+								"userId" : "abc3@gmail.com"
+							}, {
+								"userName" : "abc4",
+								"userId" : "abc4@gmail.com"
+							} ],
+							"following" : [ {
+								"userName" : "abc5",
+								"userId" : "abc5@gmail.com"
+							}, {
+								"userName" : "abc6",
+								"userId" : "abc6@gmail.com"
+							}, {
+								"userName" : "abc7",
+								"userId" : "abc7@gmail.com"
+							}, {
+								"userName" : "abc8",
+								"userId" : "abc8@gmail.com"
+							} ]
+						 }
+					};
+					docClient.put(paramsForCreate, function(err, data) {
+						  if (err) {
+							  console.log("Error occurred while saving user profile");
+						  } else {
+							  console.log("Add item successfully to user profile");
+							  location.replace("Home.html");
+							  if(profile != undefined){
+								  localStorage.setItem('profile', JSON.stringify(profile)); 
+								  window.location.href =  "Home.html";
+							  }else{
+								  window.location.href =  "Home.html";
+							  }
+						  }
+					});
+		
+			}
+
+
+
         } else {
+			//TODO remove this
+			
             console.log("Update Successful");
-            isExistingUser =true;
+			isExistingUser =true;
             location.replace("Home.html");
 	      	  if(profile != undefined){
 	      		  localStorage.setItem('profile', JSON.stringify(profile)); 
@@ -108,59 +171,7 @@ function  saveUserProfileToDynamoDB(profile){
         }
     });
     
-    if(!isExistingUser){
-		var paramsForCreate = {
-		        TableName :"user",
-		        Item:{
-		        	"userId":profile.getEmail(),
-		            "userName":profile.getName(),
-		            "loginTimeStamp":currentDate,
-		            "visitCount":1,
-		            "userProfile":profile.getImageUrl(),
-		            "followers" : [ {
-						"userName" : "Romila Mukherjee",
-						"userId" : "ms.romila@gmail. com"
-					}, {
-						"userName" : "abc2",
-						"userId" : "abc2@gmail.com"
-					}, {
-						"userName" : "abc3",
-						"userId" : "abc3@gmail.com"
-					}, {
-						"userName" : "abc4",
-						"userId" : "abc4@gmail.com"
-					} ],
-					"following" : [ {
-						"userName" : "abc5",
-						"userId" : "abc5@gmail.com"
-					}, {
-						"userName" : "abc6",
-						"userId" : "abc6@gmail.com"
-					}, {
-						"userName" : "abc7",
-						"userId" : "abc7@gmail.com"
-					}, {
-						"userName" : "abc8",
-						"userId" : "abc8@gmail.com"
-					} ]
-		         }
-			};
-			docClient.put(paramsForCreate, function(err, data) {
-			      if (err) {
-			          console.log("Error occurred while saving user profile");
-			      } else {
-			    	  console.log("Add item successfully to user profile");
-			    	  location.replace("Home.html");
-			    	  if(profile != undefined){
-			    		  localStorage.setItem('profile', JSON.stringify(profile)); 
-			    		  window.location.href =  "Home.html";
-			    	  }else{
-			    		  window.location.href =  "Home.html";
-			    	  }
-			      }
-			});
-
-	}
+   
 
    
     return true;
@@ -203,18 +214,21 @@ function readURL(input) {
  */
 
 function uploadPic(){
-	AWS.config.region = 'us-east-1'; // 1. Enter your region
+	//TODO remove this test reco call
+	testReco();
+	//ListReco(following,preferences_list);
 
-    AWS.config.credentials = new AWS.CognitoIdentityCredentials({
-      IdentityPoolId: 'us-east-1:087ddfbd-715d-4afc-899b-8ac79d68eb91' // 2. Enter your identity pool
-    });
-
+		// Initialize the Amazon Cognito credentials provider
+	AWS.config.region = 'us-east-1'; // Region
+	AWS.config.credentials = new AWS.CognitoIdentityCredentials({
+		IdentityPoolId: 'us-east-1:d640cf23-7fca-44bc-9af0-dd362df3b1c9',
+	});
     AWS.config.credentials.get(function(err) {
       if (err) alert(err);
       console.log(AWS.config.credentials);
     });
 
-  var bucketName = 'snapsnus'; // Enter your bucket name
+  var bucketName = 'snapsnus2'; // Enter your bucket name
   var bucket = new AWS.S3({
       params: {
           Bucket: bucketName
@@ -242,8 +256,12 @@ function uploadPic(){
               if (err) {
                   results.innerHTML = 'ERROR: ' + err;
               } else {
-                  alert("Image uploaded successfully!");
-                  DetectLabels(bucketName,bucket,useremail + '/' + file.name);
+				  alert("Image uploaded successfully!");
+				  //testReco();
+				  DetectLabels(bucketName,bucket,useremail + '/' + file.name);
+				  
+				 // getLabels(bucketName,bucket,useremail + '/' +'pexels-photo-170811.jpeg');
+			
               }
           });
       } else {
@@ -320,18 +338,164 @@ function uploadPic(){
 	     }
 
 	    });
-	     
+	}
+	
+
+	
+
+	//var following = [];
+	function populateFollowingList()
+	{
+				
+				// Initialize the Amazon Cognito credentials provider
+		AWS.config.region = 'us-east-1'; // Region
+		AWS.config.credentials = new AWS.CognitoIdentityCredentials({
+			IdentityPoolId: 'us-east-1:d640cf23-7fca-44bc-9af0-dd362df3b1c9',
+		});
+		var docClient = new AWS.DynamoDB.DocumentClient();
+		
+		var params = {
+			TableName : "user",
+			Key : {
+				"userId" : "tosvoyager43@gmail.com",
+				"userName" : "Toshi Mishra"
+	//			"userId" : "hersom179@gmail.com",
+	//			"userName" : "royal hersom"
+			},
+			ProjectionExpression : "following"
+	
+		};
+		docClient
+				.get(
+						params,
+						function(err, data) {
+							if (err) {
+								console.log(err,err.stack);
+							} else {
+	
+								for (var i = 0; i < data.Item.following.length; i++) 
+								{
+									following[i]=data.Item.following[i].userId;
+									console.log(i+" "+following[i]);
+
+								}
+								ListReco(following,preferences_list);
+							}
+						});
+
+	}
+
+	//var preferences_list = [];
+
+	function populatePreferences()
+	{
+		console.log("populatePreferences called");
+				// Initialize the Amazon Cognito credentials provider
+		AWS.config.region = 'us-east-1'; // Region
+		AWS.config.credentials = new AWS.CognitoIdentityCredentials({
+			IdentityPoolId: 'us-east-1:d640cf23-7fca-44bc-9af0-dd362df3b1c9',
+		});
+		var docClient = new AWS.DynamoDB.DocumentClient();
+		var params = {
+    	TableName : "user",
+    	Key : {
+			"userId" : "tosvoyager43@gmail.com",
+			"userName" : "Toshi Mishra"
+	//      "userId" : "hersom179@gmail.com",
+	//      "userName" : "royal hersom"
+    		},
+    	ProjectionExpression : "preferences"
+
+  			};
+		docClient
+			.get(
+				params,
+				function(err, data) {
+					if (err) {
+					console.log(err);
+					} else {
+					for(var i =0;i<data.Item.preferences.length;i++)
+					{
+						preferences_list[data.Item.preferences[i].Value] = true;
+					}
+					populateFollowingList();
+					}
+				});
 
 
 	}
+
+	function recommendations(bucketname, bucket,key,preferences_map)
+	{
+		var params = {
+			Bucket: bucketname,
+			Key: key
+		};
+		bucket.getObjectTagging(params, function(err,data)
+		{	
+			
+			if (err) console.log(err, err.stack); // an error occurred
+				   else{// successful response
+						var match =0;
+					   for(var i =0;i<data.TagSet.length;i++)
+					   {	console.log(data.TagSet[i].Value);
+							if(preferences_map[data.TagSet[i].Value] == true)
+								match++;
+					   }
+					   //Change this to minimum nuber of matches to show for recommendation
+					   if(match > 0)
+					   {
+						   recommendation_list[recommendation_list.length] = 'https://s3.amazonaws.com/snapsnus2/'+key;
+						   //console.log("Image Recommended "+key );
+						   console.log(recommendation_list);
+						   //Show this image in recommendation pane
+
+					   }
+				   }         
+		});
+
+	}
+	function ListReco(listOfFollowing,preferences_map)
+	{
+		var BucketName = 'snapsnus2';
+		var s3Bucket = new AWS.S3({
+			params: {
+				Bucket: BucketName
+			}
+		});
+	
+		for(var i = 0;i<listOfFollowing.length;i++)
+		{
+			var prefix = listOfFollowing[i];
+			var params = {
+				Bucket: BucketName,
+				Prefix: prefix
+			};
+			s3Bucket.listObjects(params, function(err, data) {
+				if (err) {
+					results.innerHTML = 'ERROR: ' + err;
+				} else {
+					
+					data.Contents.forEach(function(obj) {
+						recommendations(BucketName,s3Bucket,obj.Key,preferences_map);
+					});
+					
+				}
+			});
+	  
+			
+		}
+
+	}
+
   
   function getImage()
   {
-	  AWS.config.region = 'ap-southeast-1'; // 1. Enter your region
-
-	    AWS.config.credentials = new AWS.CognitoIdentityCredentials({
-	      IdentityPoolId: 'ap-southeast-1:7c5663a7-4136-408a-a9ba-5caa4f297aef' // 2. Enter your identity pool
-	    });
+	// Initialize the Amazon Cognito credentials provider
+		AWS.config.region = 'us-east-1'; // Region
+		AWS.config.credentials = new AWS.CognitoIdentityCredentials({
+			IdentityPoolId: 'us-east-1:d640cf23-7fca-44bc-9af0-dd362df3b1c9',
+		});
 
 	    AWS.config.credentials.get(function(err) {
 	      if (err) alert(err);
@@ -339,19 +503,19 @@ function uploadPic(){
 	    });
 	  var s3Bucket = new AWS.S3({
 	      params: {
-	          Bucket: 'snap-nus'
+	          Bucket: 'snapsnus2'
 	      }
 	  });
-	  var urlParams = {Bucket: 'snap-nus', Key: 'testing'};
+	  var urlParams = {Bucket: 'snapsnus2', Key: 'testing'};
 	  s3Bucket.getSignedUrl('getObject', urlParams, function(err, url){
 	    console.log('the url of the image is', url);
 	  })
 	  
-	  var params = {Bucket: 'snap-nus'};
+	  var params = {Bucket: 'snapsnus2'};
 	  s3Bucket.listObjects(params, function(err, data){
 	    var bucketContents = data.Contents;
 	      for (var i = 0; i < bucketContents.length; i++){
-	        var urlParams = {Bucket: 'snap-nus', Key: bucketContents[i].Key};
+	        var urlParams = {Bucket: 'snapsnus2', Key: bucketContents[i].Key};
 	          s3.getSignedUrl('getObject',urlParams, function(err, url){
 	            console.log('the url of the image is', url);
 	          });
@@ -369,3 +533,148 @@ function uploadPic(){
 	  
 	  
   }
+
+  
+function AddToPreferences(attribute)
+{
+				// Initialize the Amazon Cognito credentials provider
+		AWS.config.region = 'us-east-1'; // Region
+		AWS.config.credentials = new AWS.CognitoIdentityCredentials({
+			IdentityPoolId: 'us-east-1:d640cf23-7fca-44bc-9af0-dd362df3b1c9',
+		});
+		var DB = new AWS.DynamoDB.DocumentClient();
+
+		var table = "user";
+
+		
+		// Add to prefernces only if previoulsy non existent
+		console.log("Inside adding pref "+preferences_list[attribute]);
+		if(preferences_list[attribute] != true)
+		{
+			return DB.update({
+			TableName:table,
+			Key:{
+				"userId" : "tosvoyager43@gmail.com",
+					"userName" : "Toshi Mishra"
+		//          "userId" : "hersom179@gmail.com",
+		//      "userName" : "royal hersom"
+		//            "userId": profile.getEmail(),
+		//            "userName":profile.getName()
+			},
+			ReturnValues: 'ALL_NEW',
+			UpdateExpression: 'set preferences = list_append(if_not_exists(preferences, :empty_list), :array)',
+			ExpressionAttributeValues: {
+				':array': [{"Value":attribute}],
+				':empty_list': []
+				}
+		}).promise()
+
+		}
+		
+}
+var attributes = [];
+
+function onLikeEvent(bucketname, bucket,key)
+ {
+
+  var params = {
+      Bucket: bucketname,
+      Key: key
+	};
+	AWS.config.region = 'us-east-1'; // Region
+		AWS.config.credentials = new AWS.CognitoIdentityCredentials({
+			IdentityPoolId: 'us-east-1:d640cf23-7fca-44bc-9af0-dd362df3b1c9',
+		});
+    bucket.getObjectTagging(params, function(err,data)
+    { 
+      
+      if (err) console.log(err, err.stack); // an error occurred
+           else{// successful response
+              
+             for(var i =0;i<data.TagSet.length;i++)
+			 {  attributes[i] = data.TagSet[i].Value;
+				AddToPreferences(attributes[i]);
+              
+			 }
+			 console.log("Attributes "+attributes);
+             //AddToPreferences(attributes);
+            
+           }         
+    });
+
+
+ }
+
+ function shuffle(array) {
+	var currentIndex = array.length, temporaryValue, randomIndex;
+  
+	// While there remain elements to shuffle...
+	while (0 !== currentIndex) {
+  
+	  // Pick a remaining element...
+	  randomIndex = Math.floor(Math.random() * currentIndex);
+	  currentIndex -= 1;
+  
+	  // And swap it with the current element.
+	  temporaryValue = array[currentIndex];
+	  array[currentIndex] = array[randomIndex];
+	  array[randomIndex] = temporaryValue;
+	}
+  
+	return array;
+  }
+
+  function createDiv(){
+	recommendation_list = shuffle(recommendation_list);
+	var d = document.getElementById('items');
+
+  for(var i=0;i<recommendation_list.length;i++)
+  {
+    var iDiv =document.createElement('div');
+    iDiv.id = 'list'+i;
+    iDiv.className = "col-sm-6 col-md-3 col-lg-3 web";
+    var src = recommendation_list[i];
+    var child = "<div class='portfolio-item'><div class='hover-bg'> <a href="+src+"rel='prettyPhoto'><img src="+src+" class='img-responsive' alt='Project Title'> </a> </div></div>";
+	iDiv.innerHTML = child;
+
+    d.append(iDiv); 
+  }
+}
+   
+  
+  var prefers = [];
+  //TODO : Remove this dummy method
+
+ function testReco()
+  {
+	  attributes[0] = "Car";
+	  //AddToPreferences(attributes);
+			// Initialize the Amazon Cognito credentials provider
+		AWS.config.region = 'us-east-1'; // Region
+		AWS.config.credentials = new AWS.CognitoIdentityCredentials({
+			IdentityPoolId: 'us-east-1:d640cf23-7fca-44bc-9af0-dd362df3b1c9',
+		});
+	  var s3Bucket = new AWS.S3({
+		params: {
+			Bucket: 'snapsnus2'
+		}
+	});
+	console.log(preferences_list);
+	//onLikeEvent('snapsnus2',s3Bucket,"tosvoyager43@gmail.com/brand-business-cellphone-204611.jpg");
+
+	//populateFollowingList();
+   // populatePreferences();
+
+	//following[0] = "dharith5@gmail.com";
+	//following[1] = "tosvoyager43@gmail.com"
+	//preferences_list["Computer"] = 'true';
+	// prefers["Outdoors"] = 'true';
+	// prefers["Car"] = 'true';
+	// prefers["Mountain"] = 'true';
+	// prefers["Transportation"] = 'true';
+	//ListReco(following,preferences_list);
+	recommendation_list = shuffle(recommendation_list);
+	console.log(recommendation_list);
+  }
+
+  
