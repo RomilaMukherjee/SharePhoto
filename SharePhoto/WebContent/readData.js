@@ -69,7 +69,7 @@ function readItem(a) {
 //			"userId" : "hersom179@gmail.com",
 //			"userName" : "royal hersom"
 		},
-		ProjectionExpression : condition
+		ProjectionExpression : "followers, following"
 
 	};
 	docClient
@@ -118,6 +118,14 @@ function showOnUI(data, condition) {
 		for (i = 0; i < data.Item.followers.length; i++) {
 			var userName = data.Item.followers[i].userName;
 			var userId = data.Item.followers[i].userId;
+			var isFollwing = checkIfPresentInFollowing(data, userId);
+			var ButtonString;
+			if(isFollwing){
+				ButtonString = "Unfollow";
+			}else{
+				ButtonString = "Follow";
+			}
+			
 			alert(userId);
 			var buttonIdFol = "follButton" + i;
 			var userNameId = "div_name" + i;
@@ -139,7 +147,7 @@ function showOnUI(data, condition) {
 			document.write("			<div class=\"media-right\">");
 			document
 					.write("				<button id=" + buttonIdFol + " class=\"btn btn-default btn-sm\"");
-			document.write("					onclick=\"follow(this.id)\">Follow<\/button>");
+			document.write("					onclick=\"follow(this.id)\">"+ButtonString+"<\/button>");
 			document.write("			<\/div>");
 			document.write("		<\/div>");
 		}
@@ -183,7 +191,17 @@ function showOnUI(data, condition) {
 
 }
 
-
+function checkIfPresentInFollowing(data, userId){
+	var isinFollowing = false;
+	 for (ind = 0; ind < data.Item.following.length; ind++) {
+			if(data.Item.following[ind].userId == userId){
+				isinFollowing = true;
+				break;
+			}
+		}
+	 return isinFollowing;
+	
+}
 
 /* Function Name : getIndex 
  * Return type : Int
