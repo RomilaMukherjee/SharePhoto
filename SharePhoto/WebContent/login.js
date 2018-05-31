@@ -6,7 +6,6 @@ var useremail;
 
 function onSignIn(googleUser) {
   var profile = googleUser.getBasicProfile();
-  console.log('ID: ' + profile.getId()); // Do not send to your backend! Use an ID token instead.
   console.log('Name: ' + profile.getName());
   console.log('Image URL: ' + profile.getImageUrl());
   console.log('Email: ' + profile.getEmail()); 
@@ -17,17 +16,6 @@ function onSignIn(googleUser) {
   
   //Call API to persist the userInformation to DB
   saveUserProfileToDynamoDB(profile);
- 
- /*if(profileSaved==true){
-	location.replace("Home.html");
-	  if(profile != undefined){
-		  localStorage.setItem('profile', JSON.stringify(profile)); 
-		  window.location.href =  "Home.html";
-	  }else{
-		  window.location.href =  "Home.html";
-	  }
-
-  }*/
 }
 
 
@@ -56,6 +44,7 @@ function myFunction() {
         }
     }
 }
+
 /**
  * API to save user profile in database
  * @param profile
@@ -72,7 +61,13 @@ function  saveUserProfileToDynamoDB(profile){
 		  RoleArn: "arn:aws:iam::163612915076:role/Cognito_TeamShareUnauth_Role"
 	});
   	
-  	var dynamodb = new AWS.DynamoDB();
+	
+	/*AWS.config.region = 'us-east-1'; // 1. Enter your region
+    AWS.config.credentials = new AWS.CognitoIdentityCredentials({
+      IdentityPoolId: 'us-east-1:087ddfbd-715d-4afc-899b-8ac79d68eb91' // 2. Enter your identity pool
+
+    });
+*/  var dynamodb = new AWS.DynamoDB();
   	var docClient = new AWS.DynamoDB.DocumentClient();
 	var currentDate = new Date();
 	
@@ -95,75 +90,77 @@ function  saveUserProfileToDynamoDB(profile){
         if (err) {
             console.log("Error occurred");
         	isExistingUser =false;
+        	
+        	/**Insert user if not exist************/
+        	isExistingUser =false;
+			if(!isExistingUser){
+		
+				var paramsForCreate = {
+						TableName :"user",
+						Item:{
+							"userId":profile.getEmail(),
+							"userName":profile.getName(),
+							"loginTimeStamp":currentDate,
+							"visitCount":1,
+							"userProfile":profile.getImageUrl(),
+							"followers" : [ {
+								"userName" : "Romila Mukherjee",
+								"userId" : "ms.romila@gmail. com"
+							}, {
+								"userName" : "abc2",
+								"userId" : "abc2@gmail.com"
+							}, {
+								"userName" : "abc3",
+								"userId" : "abc3@gmail.com"
+							}, {
+								"userName" : "abc4",
+								"userId" : "abc4@gmail.com"
+							} ],
+							"following" : [ {
+								"userName" : "abc5",
+								"userId" : "abc5@gmail.com"
+							}, {
+								"userName" : "abc6",
+								"userId" : "abc6@gmail.com"
+							}, {
+								"userName" : "abc7",
+								"userId" : "abc7@gmail.com"
+							}, {
+								"userName" : "abc8",
+								"userId" : "abc8@gmail.com"
+							} ]
+						 }
+					};
+					docClient.put(paramsForCreate, function(err, data) {
+						  if (err) {
+							  console.log("Error occurred while saving user profile");
+						  } else {
+							  console.log("Add item successfully to user profile");
+							  location.replace("Home.html");
+							  if(profile != undefined){
+								  localStorage.setItem('profile', JSON.stringify(profile)); 
+								  window.location.href =  "Home.html";
+							  }else{
+								  window.location.href =  "Home.html";
+							  }
+						  }
+					});
+		
+			}
         } else {
             console.log("Update Successful");
             isExistingUser =true;
             location.replace("Home.html");
-	      	  if(profile != undefined){
+	      	  
+            if(profile != undefined){
 	      		  localStorage.setItem('profile', JSON.stringify(profile)); 
 	      		  window.location.href =  "Home.html";
-	      	  }else{
+	      	}else{
 	      		  window.location.href =  "Home.html";
-	      	  }
+	      	}
         }
     });
-    
-    if(!isExistingUser){
-		var paramsForCreate = {
-		        TableName :"user",
-		        Item:{
-		        	"userId":profile.getEmail(),
-		            "userName":profile.getName(),
-		            "loginTimeStamp":currentDate,
-		            "visitCount":1,
-		            "userProfile":profile.getImageUrl(),
-		            "followers" : [ {
-						"userName" : "Romila Mukherjee",
-						"userId" : "ms.romila@gmail. com"
-					}, {
-						"userName" : "abc2",
-						"userId" : "abc2@gmail.com"
-					}, {
-						"userName" : "abc3",
-						"userId" : "abc3@gmail.com"
-					}, {
-						"userName" : "abc4",
-						"userId" : "abc4@gmail.com"
-					} ],
-					"following" : [ {
-						"userName" : "abc5",
-						"userId" : "abc5@gmail.com"
-					}, {
-						"userName" : "abc6",
-						"userId" : "abc6@gmail.com"
-					}, {
-						"userName" : "abc7",
-						"userId" : "abc7@gmail.com"
-					}, {
-						"userName" : "abc8",
-						"userId" : "abc8@gmail.com"
-					} ]
-		         }
-			};
-			docClient.put(paramsForCreate, function(err, data) {
-			      if (err) {
-			          console.log("Error occurred while saving user profile");
-			      } else {
-			    	  console.log("Add item successfully to user profile");
-			    	  location.replace("Home.html");
-			    	  if(profile != undefined){
-			    		  localStorage.setItem('profile', JSON.stringify(profile)); 
-			    		  window.location.href =  "Home.html";
-			    	  }else{
-			    		  window.location.href =  "Home.html";
-			    	  }
-			      }
-			});
-
-	}
-
-   
-    return true;
+   return true;
  }
 
 
@@ -273,7 +270,14 @@ function uploadPic(){
       });
   }
   
-  // Machine Learning APi to get preferences of the image
+/**
+ * API to invoke machine learning inbuilt API for 
+ * detecting labels
+ * @param bucketname
+ * @param bucket
+ * @param key
+ * @returns
+ */
   
   function DetectLabels(bucketname, bucket,key) {
 
