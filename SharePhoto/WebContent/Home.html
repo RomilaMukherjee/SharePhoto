@@ -23,11 +23,34 @@
 <link rel="stylesheet" type="text/css"  href="css/style1.css">
 <link rel="stylesheet" type="text/css" href="css/prettyPhoto.css">
 <link href="http://fonts.googleapis.com/css?family=Open+Sans:400,700,800,600,300" rel="stylesheet" type="text/css">
+
 	<script src="https://sdk.amazonaws.com/js/aws-sdk-2.1.12.min.js"></script>
 	<script src="https://sdk.amazonaws.com/js/aws-sdk-2.16.0.min.js"></script>
-<script type="text/javascript" src="login.js"></script>
+	<script type="text/javascript" src="login.js"></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 	<script src="https://apis.google.com/js/platform.js" async defer></script>
+	<script type="text/javascript">
+	var API_URL ="https://f966d1zhff.execute-api.ap-southeast-1.amazonaws.com/prod/RetrieveUsers";
+
+	$(function() {
+		 $.ajax({
+			 type:'GET',
+			 url:API_URL,
+			 contentType:"application/json",
+			 
+			 success:function(data){
+				let dropdown = $('#resource_name');
+				dropdown.empty();
+				dropdown.append('<option selected="true" disabled>Choose User</option>');
+				
+				for(var i=0;i<data.Items.length;i++){
+					 dropdown.append($('<option></option>').attr('value', data.Items[i].userId).text(data.Items[i].userName));
+				}
+			}
+		});
+		 return false;
+	});		 
+	</script>
 	
 	
 <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
@@ -78,7 +101,11 @@
           </div>
         </div>
         <div class="col-md-8 col-sm-6 section-title text-center">
-        <input type="text" id="myInput" onkeyup="myFunction()" placeholder="Search for names.." title="Type in a name"><br><br>
+        <select id="resource_name" name="users">
+		
+			
+		</select>
+        <br><br>
                
         <h2>Snap !! Share !! Smile !!</h2>
         <button type="button" class="btn btn-info btn-lg" align ="left" onclick="getImage();">Dashboard</button>
