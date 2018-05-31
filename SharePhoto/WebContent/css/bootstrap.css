@@ -1320,6 +1320,7 @@ mark,
 }
 .text-center {
   text-align: center;
+  -webkit-text-fill-color: #337ab7;
 }
 .text-justify {
   text-align: justify;
