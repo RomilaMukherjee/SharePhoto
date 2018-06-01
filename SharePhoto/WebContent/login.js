@@ -107,34 +107,8 @@ function  saveUserProfileToDynamoDB(profile){
 							"loginTimeStamp":currentDate,
 							"visitCount":1,
 							"preferences":"abc",
-							"userProfile":profile.getImageUrl(),
-							"followers" : [ {
-								"userName" : "Romila Mukherjee",
-								"userId" : "ms.romila@gmail. com"
-							}, {
-								"userName" : "abc2",
-								"userId" : "abc2@gmail.com"
-							}, {
-								"userName" : "abc3",
-								"userId" : "abc3@gmail.com"
-							}, {
-								"userName" : "abc4",
-								"userId" : "abc4@gmail.com"
-							} ],
-							"following" : [ {
-								"userName" : "abc5",
-								"userId" : "abc5@gmail.com"
-							}, {
-								"userName" : "abc6",
-								"userId" : "abc6@gmail.com"
-							}, {
-								"userName" : "abc7",
-								"userId" : "abc7@gmail.com"
-							}, {
-								"userName" : "abc8",
-								"userId" : "abc8@gmail.com"
-							} ]
-						 }
+							"userProfile":profile.getImageUrl()
+						  }
 					};
 					docClient.put(paramsForCreate, function(err, data) {
 						  if (err) {
