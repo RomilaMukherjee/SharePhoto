@@ -1,3 +1,8 @@
+var profilevalue = localStorage.getItem('profile');
+var finalvalue = JSON.parse(profilevalue);
+var googleUserName = finalvalue.ig;
+var googleUserId =  finalvalue.U3;
+
 function follow(name) {
 	document.getElementById("but").style.color = "red";
 	alert(name);
@@ -20,18 +25,25 @@ function viewProfile(name) {
 }
 
 var followersList = "";
-// Initialize the Amazon Cognito credentials provider
-AWS.config.region = 'us-east-1'; // Region
-AWS.config.credentials = new AWS.CognitoIdentityCredentials({
-    IdentityPoolId: 'us-east-1:d640cf23-7fca-44bc-9af0-dd362df3b1c9',
-});
+
 
 var docClient = new AWS.DynamoDB.DocumentClient();
 //var profile = googleUser.getBasicProfile();
+var followers;
+var following;
 
+
+/* Function : ReadItem
+ * Reads the Item from the Dynamo DB
+ */
 function readItem(a) {
-//	getFollowersList();
-//	getFollowingList();
+	// Initialize the Amazon Cognito credentials provider
+	AWS.config.region = 'us-east-1'; // Region
+	AWS.config.credentials = new AWS.CognitoIdentityCredentials({
+		IdentityPoolId: 'us-east-1:d640cf23-7fca-44bc-9af0-dd362df3b1c9',
+	});
+
+	var docClient = new AWS.DynamoDB.DocumentClient();
 	condition = "";
 	if (a) {
 		condition = "following";
@@ -42,12 +54,12 @@ function readItem(a) {
 	var params = {
 		TableName : "user",
 		Key : {
-			"userId" : "toshimishra5@gmail.com",
-			"userName" : "Toshi Mishra"
+			"userId" : googleUserId,
+			"userName" : googleUserName
 //			"userId" : "hersom179@gmail.com",
 //			"userName" : "royal hersom"
 		},
-		ProjectionExpression : condition
+		ProjectionExpression : "followers, following"
 
 	};
 	docClient
@@ -96,6 +108,14 @@ function showOnUI(data, condition) {
 		for (i = 0; i < data.Item.followers.length; i++) {
 			var userName = data.Item.followers[i].userName;
 			var userId = data.Item.followers[i].userId;
+			var isFollwing = checkIfPresentInFollowing(data, userId);
+			var ButtonString;
+			if(isFollwing){
+				ButtonString = "Unfollow";
+			}else{
+				ButtonString = "Follow";
+			}
+			
 			alert(userId);
 			var buttonIdFol = "follButton" + i;
 			var userNameId = "div_name" + i;
@@ -117,7 +137,7 @@ function showOnUI(data, condition) {
 			document.write("			<div class=\"media-right\">");
 			document
 					.write("				<button id=" + buttonIdFol + " class=\"btn btn-default btn-sm\"");
-			document.write("					onclick=\"follow(this.id)\">Follow<\/button>");
+			document.write("					onclick=\"follow(this.id)\">"+ButtonString+"<\/button>");
 			document.write("			<\/div>");
 			document.write("		<\/div>");
 		}
@@ -128,7 +148,9 @@ function showOnUI(data, condition) {
 		for (i = 0; i < data.Item.following.length; i++) {
 			var userName = data.Item.following[i].userName;
 			var userId = data.Item.following[i].userId;
-			var buttonId = 'unfollButton' + i;
+			var buttonId = 'follButton' + i;
+			var userNameId = "div_name" + i;
+			var userIDNo = "userId" + i;
 			document.write("		<div class=\"media user-card-sm\">");
 			document
 					.write("			<a class=\"media-left\" onclick=\"viewProfile(this)\" href=\"#\"> ");
@@ -137,16 +159,16 @@ function showOnUI(data, condition) {
 			document.write("			<\/a>");
 			document.write("			<div class=\"media-body\">");
 
-			var nameStr = "				<h4 id=\"div_name\" onclick=\"viewProfile(this)\" class=\"media-heading\">"
+			var nameStr = "				<h4 id=" + userNameId + " onclick=\"viewProfile(this)\" class=\"media-heading\">"
 					+ userName + "<\/h4>";
 			document.write(nameStr);
-			var idStr = "<p class=\"text-success\">" + userId + "<\/p>";
+			var idStr = "<p id=" + userIDNo + " class=\"text-success\">" + userId + "<\/p>";
 			document.write(idStr);
 			document.write("			<\/div>");
 			document.write("			<div class=\"media-right\">");
 			document
 					.write("				<button id=" + buttonId + " class=\"btn btn-default btn-sm\"");
-			document.write("					onclick=\"unfollow(this.id)\">unfollow<\/button>");
+			document.write("					onclick=\"follow(this.id)\">Unfollow<\/button>");
 			document.write("			<\/div>");
 			document.write("		<\/div>");
 		}
@@ -159,146 +181,152 @@ function showOnUI(data, condition) {
 
 }
 
-function getFollowersList(){
-	var params = {
-		TableName : "user",
-		Key : {
-			"userId" : "toshimishra5@gmail.com",
-			"userName" : "Toshi Mishra"
-//			"userId" : "hersom179@gmail.com",
-//			"userName" : "royal hersom"
-		},
-		ProjectionExpression : "followers"
-
-	};
-	docClient
-			.get(
-					params,
-					function(err, data) {
-						if (err) {
-							document.getElementById('textarea').innerHTML = "Unable to read item: "
-									+ "\n" + JSON.stringify(err, undefined, 2);
-						} else {
-
-							followersList = data;
-								//JSON.stringify(data, undefined, 2);
-						}
-					});
+function checkIfPresentInFollowing(data, userId){
+	var isinFollowing = false;
+	 for (ind = 0; ind < data.Item.following.length; ind++) {
+			if(data.Item.following[ind].userId == userId){
+				isinFollowing = true;
+				break;
+			}
+		}
+	 return isinFollowing;
 	
-//	    var val = "ms.romila@gmail.com"
-//		var index = followersList.Item.followers.findIndex(function(item, i){
-//		  return item.userId === val
-//		});
-
-//		console.log(followersList);
-//	var followers = JSON.parse(followersList);
-//	var index = labels.indexOf('ms.romila@gmail.com');
 }
-function getFollowingList(){
+
+/* Function Name : getIndex 
+ * Return type : Int
+ * retrieve followers / following from the dynamo db, validates for the email and return index.
+ */
+function getIndex(pToCheckId,pProjectionExpression,pUserID,pUserName,unfollowName){
+	// My Following : getIndex(document.getElementById(emailId).innerText,"following",googleUserId,googleUserName);
+	// Initialize the Amazon Cognito credentials provider
+    AWS.config.region = 'us-east-1'; // Region
+    AWS.config.credentials = new AWS.CognitoIdentityCredentials({
+        IdentityPoolId: 'us-east-1:d640cf23-7fca-44bc-9af0-dd362df3b1c9',
+    });
+	var dynamodb = new AWS.DynamoDB();
+	var docClient = new AWS.DynamoDB.DocumentClient();
+	var followList;
+	var index = -1;
 	var params = {
 		TableName : "user",
 		Key : {
-			"userId" : "toshimishra5@gmail.com",
-			"userName" : "Toshi Mishra"
-//			"userId" : "hersom179@gmail.com",
-//			"userName" : "royal hersom"
+			"userId" : pUserID,
+			"userName" : pUserName
 		},
-		ProjectionExpression : "following"
+		ProjectionExpression : pProjectionExpression,
+		ReturnValues: 'ALL_NEW',
 
 	};
-	docClient
-			.get(
-					params,
-					function(err, data) {
-						if (err) {
-							document.getElementById('textarea').innerHTML = "Unable to read item: "
-									+ "\n" + JSON.stringify(err, undefined, 2);
-						} else {
-
-							followersList = JSON.stringify(data, undefined, 2);
-						}
-					});
+	docClient.get(params, function(err, data){
+	  if(err){
+		 console.log(err);
+	  } 
+	  else{
+		  console.log(data);
+		  if(pProjectionExpression == "following"){
+			  for (i = 0; i < data.Item.following.length; i++) {
+					if(data.Item.following[i].userId == pToCheckId){
+						removeFromFollowing(i,pToCheckId,unfollowName);
+						break
+					}
+				}
+		  }else{
+			  for (i = 0; i < data.Item.followers.length; i++) {
+					if(data.Item.followers[i].userId == pToCheckId){
+						removeFromTheirFollowers(i,pUserID,pUserName);
+						break
+					}
+				}
+		  }
+		 	
+	  }
+	});
+	return index;
 }
+
+
 
 function getFollowing() {
 	readItem(true);
 }
 
 function getFollowers() {
-	//TODO : remove this test call
-	testPrefernces();
 	readItem(false);
 }
 
 function follow(button_id) {
-	var idNo = button_id.substr(10, 1);
-	var nameId = "div_name" + idNo;
-	var emailId = "userId" + idNo;
 	document.getElementById(button_id).style.color = "red";
 	if(document.getElementById(button_id).innerText == "Follow" ){ 
+		var idNo = button_id.substr(10, 1);
+		var nameId = "div_name" + idNo;
+		var emailId = "userId" + idNo;
 		document.getElementById(button_id).innerText = "Unfollow";
 		AddToFollowing(document.getElementById(nameId).innerText,document.getElementById(emailId).innerText);
 		}else{
-		document.getElementById(button_id).innerText = "Follow add";
-		removeFromFollowers(document.getElementById(nameId).innerText,document.getElementById(emailId).innerText,idNo);		
-	}
+		var idNo = button_id.substr(10, 1);
+		var nameId = "div_name" + idNo;
+		var emailId = "userId" + idNo;
+		document.getElementById(button_id).innerText = "Follow";
+		//Call getIndex() -> Email Id the Unfollow,followers/following our mail Id and name
+		getIndex(document.getElementById(emailId).innerText,"following",googleUserId,googleUserName,document.getElementById(nameId).innerText);
+		}
 }
 
-/* This Function Removes the User Name and User Id from the followers list of the one logged in person unfollow 
- * Return : Nothing
+
+
+/* Function : removeFromTheirFollowers
+ * This Function Removes the User Name and User Id from the followers list of the one logged in person unfollow 
  */
-function removeFromTheirFollowers(Name , email, No){
-	var params = {
-			  TableName : 'user',
-			  Key: {
-				  "userId" : email,
-				  "userName" : Name
-				},
-				ConditionExpression: "followers["+No+"].userId = :name",
-				UpdateExpression: "remove followers["+No+"]",
-				ExpressionAttributeValues: { ":name": email  }
-		    };
-			console.log("Attempting a conditional delete...");
-			docClient.update(params, function(err, data) {
-			    if (err) {
-			        console.error("Unable to delete item. Error JSON:", JSON.stringify(err, null, 2));
-			    } else {
-			        console.log("DeleteItem succeeded:", JSON.stringify(data, null, 2));
-			    }
-			});
-		//Add the to Following
+function removeFromTheirFollowers(index, pID , pName){
+		var params = {
+				  TableName : 'user',
+				  Key: {
+					  "userId" : pID,
+					  "userName" : pName
+					},
+					UpdateExpression: "remove followers[" + index + "]"
+			    };
+				console.log("Attempting a conditional delete...");
+				docClient.update(params, function(err, data) {
+				    if (err) {
+				        console.error("Their Followers : Unable to delete item. Error JSON:", JSON.stringify(err, null, 2));
+				    } else {
+				        console.log("DeleteItem succeeded from their Followers:", JSON.stringify(data, null, 2));
+				    }
+				});
+	
 }
 
-function removeFromFollowers(Name , email, No){
-	array = [{"userName":Name,"userId":email}];
-	var params = {
+
+
+/*Function : removeFromFollowing
+ * On click Unfollow Remove the user from the logged in user's followers list
+ */
+function removeFromFollowing(index,userId,userName){
+//	//DBIndex = getIndex(email,"following",googleUserId,googleUserName);
+//	//pass email to check/Remove , Followers / Following , Account NAme & Email ID
+			var params = {
 			  TableName : 'user',
 			  Key: {
-//				  "userId" : "hersom179@gmail.com",
-//				  "userName" : "royal hersom"
-				  "userId" : "toshimishra5@gmail.com",
-				  "userName" : "Toshi Mishra"
+				  //TODO : To be profile.getuserid...
+				  "userId" : googleUserId,
+				  "userName" : googleUserName
 				},
-//				ConditionExpression: "following["+No+"].userId = :name",
-//
-//				UpdateExpression: "remove following["+No+"]",
-				UpdateExpression: "remove followers.name",
-				//data.Fruits = data.Fruits.filter(val => ((val.Name == "name" && val.family != "C") ||  (val.Name != "name" && val.family == "C")));
-				//UpdateExpression: "followers = followers.filter(val=>(userId = :name))",
-				//UpdateExpression: "remove followers WHERE userId = :name",
-				ExpressionAttributeValues: { ":name": email  }
-				//ExpressionAttributeValues: { ":array": array  }
+				UpdateExpression: "remove following[" + index + "]"
 		    };
 			console.log("Attempting a conditional delete...");
 			docClient.update(params, function(err, data) {
 			    if (err) {
-			        console.error("Unable to delete item. Error JSON:", JSON.stringify(err, null, 2));
+			        console.error("Following : Unable to delete item. Error JSON:", JSON.stringify(err, null, 2));
 			    } else {
-			        console.log("DeleteItem succeeded:", JSON.stringify(data, null, 2));
+			        console.log(" Following : DeleteItem succeeded:", JSON.stringify(data, null, 2));
+			        getIndex(googleUserId,"followers",userId,userName,googleUserName);
 			    }
 			});
-		//Add the to Following
 }
+
+
 
 function AddToFollowing(name,emailID){
 	AddToTheirFollowers(name,emailID);
@@ -307,12 +335,8 @@ function AddToFollowing(name,emailID){
 	return DB.update({
         TableName:table,
         Key:{
-        	"userId" : "toshimishra5@gmail.com",
-			"userName" : "Toshi Mishra"
-//        	"userId" : "hersom179@gmail.com",
-//			"userName" : "royal hersom"
-//            "userId": profile.getEmail(),
-//            "userName":profile.getName()
+        	"userId" : googleUserId,
+			"userName" : googleUserName
         },
         ReturnValues: 'ALL_NEW',
         UpdateExpression: 'set following = list_append(if_not_exists(following, :empty_list), :array)',
@@ -322,8 +346,11 @@ function AddToFollowing(name,emailID){
           }
     }).promise()
     
+    AddToTheirFollowers(name,emailID)
     
 }
+
+
 
 function AddToTheirFollowers(name,emailID){
 	var DB = new AWS.DynamoDB.DocumentClient()
@@ -333,17 +360,17 @@ function AddToTheirFollowers(name,emailID){
         Key:{
         	"userId" : emailID,
 			"userName" : name
-//            "userId": profile.getEmail(),
-//            "userName":profile.getName()
         },
         ReturnValues: 'ALL_NEW',
         UpdateExpression: 'set followers = list_append(if_not_exists(followers, :empty_list), :array)',
         ExpressionAttributeValues: {
-            ':array': [{"userName":profile.getEmail(),"userId":profile.getName()}],
+            ':array': [{"userName":googleUserName,"userId":googleUserId}],
             ':empty_list': []
           }
     }).promise()
 }
+
+
 
 function addElement(parentId, elementTag, elementId, html) {
 	// Adds an element to the document
@@ -353,6 +380,8 @@ function addElement(parentId, elementTag, elementId, html) {
 	newElement.innerHTML = html;
 	p.appendChild(newElement);
 }
+
+
 
 function viewProfile(name) {
 	var n = name;
@@ -432,19 +461,5 @@ var params = {
 
 
 }
-//TODO Remove this test function
 
-function testPrefernces()
-{
-	var attr = [];
-	for(var i =0;i<3;i++)
-	{
-		attr[i] = "car"+i;
-	}
-	//getPrefernces();
-	//AddToPreferences(attr);
-	attr[0] = "Car";
-	AddToPreferences(attr);
-
-}
 

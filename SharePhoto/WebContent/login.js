@@ -2,18 +2,17 @@
  *API to fetch login details from gmail authentication
  */
 
-var useremail;
+var useremail,username;
 var following = [];
 var preferences_list = [];
 var recommendation_list =[];
-populatePreferences();
+
 
  
 
 
 function onSignIn(googleUser) {
   var profile = googleUser.getBasicProfile();
-  console.log('ID: ' + profile.getId()); // Do not send to your backend! Use an ID token instead.
   console.log('Name: ' + profile.getName());
   console.log('Image URL: ' + profile.getImageUrl());
   console.log('Email: ' + profile.getEmail()); 
@@ -24,17 +23,6 @@ function onSignIn(googleUser) {
   
   //Call API to persist the userInformation to DB
   saveUserProfileToDynamoDB(profile);
- 
- /*if(profileSaved==true){
-	location.replace("Home.html");
-	  if(profile != undefined){
-		  localStorage.setItem('profile', JSON.stringify(profile)); 
-		  window.location.href =  "Home.html";
-	  }else{
-		  window.location.href =  "Home.html";
-	  }
-
-  }*/
 }
 
 
@@ -44,6 +32,8 @@ function getprofiledetails(){
 	  $("#profilePic").attr('src',finalvalue.Paa);
 	  $("#pName").text(finalvalue.ig);
 	  useremail= finalvalue.U3;
+	  username=finalvalue.ig;
+	  populatePreferences();
 	  
 }
 
@@ -63,6 +53,7 @@ function myFunction() {
         }
     }
 }
+
 /**
  * API to save user profile in database
  * @param profile
@@ -70,13 +61,19 @@ function myFunction() {
  */
 function  saveUserProfileToDynamoDB(profile){
 	
-		// Initialize the Amazon Cognito credentials provider
-	AWS.config.region = 'us-east-1'; // Region
-	AWS.config.credentials = new AWS.CognitoIdentityCredentials({
-		IdentityPoolId: 'us-east-1:d640cf23-7fca-44bc-9af0-dd362df3b1c9',
+	// Initialize the Amazon Cognito credentials provider
+    AWS.config.region = 'us-east-1'; // Region
+    AWS.config.credentials = new AWS.CognitoIdentityCredentials({
+        IdentityPoolId: 'us-east-1:d640cf23-7fca-44bc-9af0-dd362df3b1c9',
 	});
-  	
-  	var dynamodb = new AWS.DynamoDB();
+	
+	
+	/*AWS.config.region = 'us-east-1'; // 1. Enter your region
+    AWS.config.credentials = new AWS.CognitoIdentityCredentials({
+      IdentityPoolId: 'us-east-1:087ddfbd-715d-4afc-899b-8ac79d68eb91' // 2. Enter your identity pool
+
+    });
+*/  var dynamodb = new AWS.DynamoDB();
   	var docClient = new AWS.DynamoDB.DocumentClient();
 	var currentDate = new Date();
 	
@@ -98,7 +95,8 @@ function  saveUserProfileToDynamoDB(profile){
     	isExistingUser=false;
         if (err) {
             console.log("Error occurred");
-			isExistingUser =false;
+        	isExistingUser =false;
+        	
 			if(!isExistingUser){
 		
 				var paramsForCreate = {
@@ -153,28 +151,22 @@ function  saveUserProfileToDynamoDB(profile){
 					});
 		
 			}
-
-
-
         } else {
 			//TODO remove this
 			
             console.log("Update Successful");
 			isExistingUser =true;
             location.replace("Home.html");
-	      	  if(profile != undefined){
+	      	  
+            if(profile != undefined){
 	      		  localStorage.setItem('profile', JSON.stringify(profile)); 
 	      		  window.location.href =  "Home.html";
-	      	  }else{
+	      	}else{
 	      		  window.location.href =  "Home.html";
-	      	  }
+	      	}
         }
     });
-    
-   
-
-   
-    return true;
+   return true;
  }
 
 
@@ -214,10 +206,9 @@ function readURL(input) {
  */
 
 function uploadPic(){
-	//TODO remove this test reco call
-	testReco();
-	//ListReco(following,preferences_list);
+	
 
+		// Initialize the Amazon Cognito credentials provider
 		// Initialize the Amazon Cognito credentials provider
 	AWS.config.region = 'us-east-1'; // Region
 	AWS.config.credentials = new AWS.CognitoIdentityCredentials({
@@ -258,8 +249,9 @@ function uploadPic(){
               } else {
 				  alert("Image uploaded successfully!");
 				  //testReco();
+				  console.log(useremail + '/' + file.name);
 				  DetectLabels(bucketName,bucket,useremail + '/' + file.name);
-				  
+				  //console.log(useremail + '/' + file.name);
 				 // getLabels(bucketName,bucket,useremail + '/' +'pexels-photo-170811.jpeg');
 			
               }
@@ -291,7 +283,14 @@ function uploadPic(){
       });
   }
   
-  // Machine Learning APi to get preferences of the image
+/**
+ * API to invoke machine learning inbuilt API for 
+ * detecting labels
+ * @param bucketname
+ * @param bucket
+ * @param key
+ * @returns
+ */
   
   function DetectLabels(bucketname, bucket,key) {
 
@@ -315,7 +314,8 @@ function uploadPic(){
 	       var tags = [];
 	         for (var i = 0; i < data.Labels.length; i++) {    
 	           tags[i] = {Key: "Attribute"+i,Value:data.Labels[i].Name}      
-	         }
+			 }
+			 console.log(tags);
 	         var params = {
 	          Bucket: bucketname,
 	          Key: key,
@@ -343,11 +343,10 @@ function uploadPic(){
 
 	
 
-	//var following = [];
+
 	function populateFollowingList()
 	{
-				
-				// Initialize the Amazon Cognito credentials provider
+		// Initialize the Amazon Cognito credentials provider
 		AWS.config.region = 'us-east-1'; // Region
 		AWS.config.credentials = new AWS.CognitoIdentityCredentials({
 			IdentityPoolId: 'us-east-1:d640cf23-7fca-44bc-9af0-dd362df3b1c9',
@@ -357,10 +356,9 @@ function uploadPic(){
 		var params = {
 			TableName : "user",
 			Key : {
-				"userId" : "tosvoyager43@gmail.com",
-				"userName" : "Toshi Mishra"
-	//			"userId" : "hersom179@gmail.com",
-	//			"userName" : "royal hersom"
+				"userId" : useremail,
+				"userName" : username
+
 			},
 			ProjectionExpression : "following"
 	
@@ -389,20 +387,19 @@ function uploadPic(){
 
 	function populatePreferences()
 	{
-		console.log("populatePreferences called");
-				// Initialize the Amazon Cognito credentials provider
+		// Initialize the Amazon Cognito credentials provider
 		AWS.config.region = 'us-east-1'; // Region
 		AWS.config.credentials = new AWS.CognitoIdentityCredentials({
 			IdentityPoolId: 'us-east-1:d640cf23-7fca-44bc-9af0-dd362df3b1c9',
 		});
+
 		var docClient = new AWS.DynamoDB.DocumentClient();
 		var params = {
     	TableName : "user",
     	Key : {
-			"userId" : "tosvoyager43@gmail.com",
-			"userName" : "Toshi Mishra"
-	//      "userId" : "hersom179@gmail.com",
-	//      "userName" : "royal hersom"
+			"userId" : useremail,
+			"userName" : username
+
     		},
     	ProjectionExpression : "preferences"
 
@@ -492,10 +489,10 @@ function uploadPic(){
   function getImage()
   {
 	// Initialize the Amazon Cognito credentials provider
-		AWS.config.region = 'us-east-1'; // Region
-		AWS.config.credentials = new AWS.CognitoIdentityCredentials({
-			IdentityPoolId: 'us-east-1:d640cf23-7fca-44bc-9af0-dd362df3b1c9',
-		});
+    AWS.config.region = 'us-east-1'; // Region
+    AWS.config.credentials = new AWS.CognitoIdentityCredentials({
+        IdentityPoolId: 'us-east-1:d640cf23-7fca-44bc-9af0-dd362df3b1c9',
+    });
 
 	    AWS.config.credentials.get(function(err) {
 	      if (err) alert(err);
@@ -537,7 +534,7 @@ function uploadPic(){
   
 function AddToPreferences(attribute)
 {
-				// Initialize the Amazon Cognito credentials provider
+		// Initialize the Amazon Cognito credentials provider
 		AWS.config.region = 'us-east-1'; // Region
 		AWS.config.credentials = new AWS.CognitoIdentityCredentials({
 			IdentityPoolId: 'us-east-1:d640cf23-7fca-44bc-9af0-dd362df3b1c9',
@@ -546,7 +543,6 @@ function AddToPreferences(attribute)
 
 		var table = "user";
 
-		
 		// Add to prefernces only if previoulsy non existent
 		console.log("Inside adding pref "+preferences_list[attribute]);
 		if(preferences_list[attribute] != true)
@@ -554,12 +550,8 @@ function AddToPreferences(attribute)
 			return DB.update({
 			TableName:table,
 			Key:{
-				"userId" : "tosvoyager43@gmail.com",
-					"userName" : "Toshi Mishra"
-		//          "userId" : "hersom179@gmail.com",
-		//      "userName" : "royal hersom"
-		//            "userId": profile.getEmail(),
-		//            "userName":profile.getName()
+				"userId" : useremail,
+				"userName" : username
 			},
 			ReturnValues: 'ALL_NEW',
 			UpdateExpression: 'set preferences = list_append(if_not_exists(preferences, :empty_list), :array)',
@@ -581,10 +573,12 @@ function onLikeEvent(bucketname, bucket,key)
       Bucket: bucketname,
       Key: key
 	};
-	AWS.config.region = 'us-east-1'; // Region
-		AWS.config.credentials = new AWS.CognitoIdentityCredentials({
-			IdentityPoolId: 'us-east-1:d640cf23-7fca-44bc-9af0-dd362df3b1c9',
-		});
+	// Initialize the Amazon Cognito credentials provider
+    AWS.config.region = 'us-east-1'; // Region
+    AWS.config.credentials = new AWS.CognitoIdentityCredentials({
+        IdentityPoolId: 'us-east-1:d640cf23-7fca-44bc-9af0-dd362df3b1c9',
+    });
+
     bucket.getObjectTagging(params, function(err,data)
     { 
       
@@ -627,7 +621,7 @@ function onLikeEvent(bucketname, bucket,key)
   function createDiv(){
 	recommendation_list = shuffle(recommendation_list);
 	var d = document.getElementById('items');
-
+	console.log("in creatediv");
   for(var i=0;i<recommendation_list.length;i++)
   {
     var iDiv =document.createElement('div');
@@ -645,36 +639,5 @@ function onLikeEvent(bucketname, bucket,key)
   var prefers = [];
   //TODO : Remove this dummy method
 
- function testReco()
-  {
-	  attributes[0] = "Car";
-	  //AddToPreferences(attributes);
-			// Initialize the Amazon Cognito credentials provider
-		AWS.config.region = 'us-east-1'; // Region
-		AWS.config.credentials = new AWS.CognitoIdentityCredentials({
-			IdentityPoolId: 'us-east-1:d640cf23-7fca-44bc-9af0-dd362df3b1c9',
-		});
-	  var s3Bucket = new AWS.S3({
-		params: {
-			Bucket: 'snapsnus2'
-		}
-	});
-	console.log(preferences_list);
-	//onLikeEvent('snapsnus2',s3Bucket,"tosvoyager43@gmail.com/brand-business-cellphone-204611.jpg");
-
-	//populateFollowingList();
-   // populatePreferences();
-
-	//following[0] = "dharith5@gmail.com";
-	//following[1] = "tosvoyager43@gmail.com"
-	//preferences_list["Computer"] = 'true';
-	// prefers["Outdoors"] = 'true';
-	// prefers["Car"] = 'true';
-	// prefers["Mountain"] = 'true';
-	// prefers["Transportation"] = 'true';
-	//ListReco(following,preferences_list);
-	recommendation_list = shuffle(recommendation_list);
-	console.log(recommendation_list);
-  }
 
   
