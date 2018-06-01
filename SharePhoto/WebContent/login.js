@@ -618,7 +618,8 @@ function onLikeEvent(bucketname, bucket,key)
     iDiv.id = 'list'+i;
     iDiv.className = "col-sm-6 col-md-3 col-lg-3 web";
     var src = recommendation_list[i];
-    var child = "<div class='portfolio-item'><div class='hover-bg'> <a href="+src+"rel='prettyPhoto'><img src="+src+" class='img-responsive' alt='Project Title'> </a> </div></div>";
+   // var child = "<div class='portfolio-item'><div class='hover-bg'> <a href="+src+" rel=`prettyPhoto`><img src="+src+" class='img-responsive' alt='Project Title'> </a> </div></div>";
+	var child = '<div class="portfolio-item"><div class="hover-bg"> <a href='+src+" rel=prettyPhoto"+'><img src='+src+' class="img-responsive" alt="Project Title"> </a> </div></div>';
 	iDiv.innerHTML = child;
 
     d.append(iDiv); 
