@@ -106,6 +106,7 @@ function  saveUserProfileToDynamoDB(profile){
 							"userName":profile.getName(),
 							"loginTimeStamp":currentDate,
 							"visitCount":1,
+							"preferences":"abc",
 							"userProfile":profile.getImageUrl(),
 							"followers" : [ {
 								"userName" : "Romila Mukherjee",
