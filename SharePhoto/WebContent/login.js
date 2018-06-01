@@ -67,13 +67,13 @@ function  saveUserProfileToDynamoDB(profile){
         IdentityPoolId: 'us-east-1:d640cf23-7fca-44bc-9af0-dd362df3b1c9',
 	});
 	
-	
 	/*AWS.config.region = 'us-east-1'; // 1. Enter your region
     AWS.config.credentials = new AWS.CognitoIdentityCredentials({
       IdentityPoolId: 'us-east-1:087ddfbd-715d-4afc-899b-8ac79d68eb91' // 2. Enter your identity pool
 
     });
-*/  var dynamodb = new AWS.DynamoDB();
+	 */  
+    var dynamodb = new AWS.DynamoDB();
   	var docClient = new AWS.DynamoDB.DocumentClient();
 	var currentDate = new Date();
 	
@@ -630,4 +630,15 @@ function onLikeEvent(bucketname, bucket,key)
   //TODO : Remove this dummy method
 
 
+  /**
+   * API to redirect to
+   * Search Profile for 
+   * different users
+   * @param elemVar
+   * @returns
+   */
+  function redirectProfilePage(elemVar){
+		var profileEmail = document.getElementById('resource_name').value;
+		window.location.href =  "SearchProfile.html?profileId="+profileEmail;
+  }
   
