@@ -242,7 +242,6 @@ var file = fileChooser.files[0];
                console.log(err);
            } else {
                alert("Image uploaded successfully!");
-               DetectLabels(bucketName,bucket,useremail + '/' + file.name);
            }
        });
    } else {
@@ -256,65 +255,6 @@ $('#modaldialog').hide();
 }
 
  
-/**
- * API to invoke machine learning inbuilt API for 
- * detecting labels
- * @param bucketname
- * @param bucket
- * @param key
- * @returns
- */
-  
-  function DetectLabels(bucketname, bucket,key) {
-
-	     var rekognition = new AWS.Rekognition();
-
-	     var params = {
-	         Image: {
-	          S3Object: {
-	           Bucket: bucketname,
-	           Name: key
-	          }
-	         },
-
-	         MaxLabels: 25,
-	         MinConfidence: 70
-
-	        };
-	     rekognition.detectLabels(params, function (err, data) {
-	     if (err) console.log(err, err.stack); // an error occurred
-	     else {
-	       var tags = [];
-	         for (var i = 0; i < data.Labels.length; i++) {    
-	           tags[i] = {Key: "Attribute"+i,Value:data.Labels[i].Name}      
-			 }
-			 console.log(tags);
-	         var params = {
-	          Bucket: bucketname,
-	          Key: key,
-	           Tagging: {
-	           TagSet:tags
-	          }
-	         };
-	       
-	         bucket.putObjectTagging(params, function(err, data) {
-
-	               if (err) console.log(err, err.stack); // an error occurred
-	               else     console.log(data);           // successful response
-	               /*
-	               data = {
-	                VersionId: "null"
-	               }
-	               */
-	             }); 
-	         
-	     }
-
-	    });
-	}
-	
-
-	
 
 
 	function populateFollowingList()
