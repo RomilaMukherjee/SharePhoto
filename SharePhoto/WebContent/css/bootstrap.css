@@ -6572,4 +6572,8 @@ button.close {
     display: none !important;
   }
 }
+
+#resource_name {
+	width:80% !importnant;
+}
 /*# sourceMappingURL=bootstrap.css.map */

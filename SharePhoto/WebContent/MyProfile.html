@@ -26,6 +26,17 @@
 	<script src="https://sdk.amazonaws.com/js/aws-sdk-2.1.12.min.js"></script>
 	<script src="https://sdk.amazonaws.com/js/aws-sdk-2.16.0.min.js"></script>
 <script type="text/javascript" src="login.js"></script>
+<script type="text/javascript" src="lib/axios/dist/axios.standalone.js"></script>
+<script type="text/javascript" src="lib/CryptoJS/rollups/hmac-sha256.js"></script>
+<script type="text/javascript" src="lib/CryptoJS/rollups/sha256.js"></script>
+<script type="text/javascript" src="lib/CryptoJS/components/hmac.js"></script>
+<script type="text/javascript" src="lib/CryptoJS/components/enc-base64.js"></script>
+<script type="text/javascript" src="lib/url-template/url-template.js"></script>
+<script type="text/javascript" src="lib/apiGatewayCore/sigV4Client.js"></script>
+<script type="text/javascript" src="lib/apiGatewayCore/apiGatewayClient.js"></script>
+<script type="text/javascript" src="lib/apiGatewayCore/simpleHttpClient.js"></script>
+<script type="text/javascript" src="lib/apiGatewayCore/utils.js"></script>
+<script type="text/javascript" src="apigClient.js"></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 	<script src="https://apis.google.com/js/platform.js" async defer></script>
 		<script type="text/javascript">
@@ -83,9 +94,9 @@
           </div>
         </div>
         <div class="col-md-8 col-sm-6 section-title text-center">
-        <input type="text" id="myInput" onkeyup="myFunction()" placeholder="Search for names.." title="Type in a name"><br><br>
+        <h3>My Profile</h3><br><br>
+         <h2>Snap !! Share !! Smile !!</h2>
                
-        <h2>Snap !! Share !! Smile !!</h2>
         <button type="button" class="btn btn-info btn-lg" align ="left" data-toggle="modal" data-target="#myModal">Post Snap</button>
         <button type="button" class="btn btn-info btn-lg" align ="left" onclick="window.location.href = 'FollowerUsers.html'">Followers</button>
         <button type="button" class="btn btn-info btn-lg" align ="left" onclick="window.location.href = 'FollowingUsers.html'">Following</button>
@@ -129,7 +140,6 @@
         </li>
       </ul>
       </div>
-      <div class="clearfix"></div>
     </div>
     <div class="row" >
       <div class="portfolio-items" id="formimg">

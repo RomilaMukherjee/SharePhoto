@@ -572,3 +572,34 @@ function getPrefernces()
 	});
 
 }
+
+
+function   checkFollowing(profileid,profilename){
+	var following;
+	var params = {
+			TableName : "user",
+			Key : {
+				"userId" : googleUserId,
+                "userName":googleUserName
+			},
+			ProjectionExpression : "following"
+
+		};
+	
+	docClient.get(params,function(err, data) {
+							if (err) {
+								console.log("Error occurred");
+							} else {
+								following = JSON.stringify(data, undefined, 2);
+								console.log(data);
+								for (i = 0; i < data.Item.following.length; i++) {
+									var id = data.Item.following[i].userId;
+							        if(id==profileid)
+							        	{
+							        	 $("#follow").addClass("hide");
+							        	 $("#unfollow").removeClass("hide");
+							        	}						        	
+								}
+							}
+						});
+}

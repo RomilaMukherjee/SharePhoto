@@ -103,14 +103,12 @@
           </div>
         </div>
         <div class="col-md-8 col-sm-6 section-title text-center">
-        <select id="resource_name" name="users" onChange="redirectProfilePage(this);">
-		
-			
-		</select>
-        <br><br>
                
         <h2>Snap !! Share !! Smile !!</h2>
-        <button type="button" class="btn btn-info btn-lg" align ="left" onclick="getImage();">Dashboard</button>
+        <select id="resource_name" name="users" style="width: 60%" onChange="redirectProfilePage(this);">			
+		</select>
+        <br><br>
+        <button type="button" class="btn btn-info btn-lg" align ="left">Dashboard</button>
         <button type="button" class="btn btn-info btn-lg" align ="left" onclick="createDiv();">Recommendations</button>
         <button type="button" class="btn btn-info btn-lg" align ="left" data-toggle="modal" data-target="#myModal">Post Snap</button>
         
@@ -144,21 +142,11 @@
         </div>
       </div>
     </div>
-    <div class="categories">
-      <ul class="cat">
-        <li>
-          <ol class="type">
-            <li><a href="#" data-filter="*" class="active">All</a></li>
-            <li><a href="#" data-filter=".web">Recommendations</a></li>         
-             </ol>
-        </li>
-      </ul>
-      </div>
     </div>
+    
     <div class="row">
       <div class="portfolio-items" id ="items">
-       
-
+   
       </div>
     </div>
 

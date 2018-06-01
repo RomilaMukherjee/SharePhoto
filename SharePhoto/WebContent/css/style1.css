@@ -230,6 +230,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#20a6bb', end
 /* Portfolio Section */
 #portfolio {
 	padding: 100px 0;
+	background-color:#D3D3D3;
 }
 .categories {
 	padding-bottom: 30px;
@@ -609,3 +610,8 @@ header .intro-text {
     .modal-content {
         width: 100%;
     }
+
+#resource_name
+{
+	width:80% !importnant;
+}

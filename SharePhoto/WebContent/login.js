@@ -7,9 +7,15 @@ var following = [];
 var preferences_list = [];
 var recommendation_list =[];
 
+//Initialize the Amazon Cognito credentials provider
+AWS.config.region = 'us-east-1'; // Region
+AWS.config.credentials = new AWS.CognitoIdentityCredentials({
+    IdentityPoolId: 'us-east-1:d640cf23-7fca-44bc-9af0-dd362df3b1c9',
+});
 
- 
-
+var dynamodb = new AWS.DynamoDB();
+var docClient = new AWS.DynamoDB.DocumentClient();
+var table = "user";
 
 function onSignIn(googleUser) {
   var profile = googleUser.getBasicProfile();
@@ -34,25 +40,9 @@ function getprofiledetails(){
 	  useremail= finalvalue.U3;
 	  username=finalvalue.ig;
 	  populatePreferences();
-	  
+	  return finalvalue;
 }
 
-function myFunction() {
-    var input, filter, ul, li, a, i;
-    input = document.getElementById("myInput");
-    filter = input.value.toUpperCase();
-    ul = document.getElementById("myUL");
-    li = ul.getElementsByTagName("li");
-    for (i = 0; i < li.length; i++) {
-        a = li[i].getElementsByTagName("a")[0];
-        if (a.innerHTML.toUpperCase().indexOf(filter) > -1) {
-            li[i].style.display = "";
-        } else {
-            li[i].style.display = "none";
-
-        }
-    }
-}
 
 /**
  * API to save user profile in database
@@ -61,11 +51,6 @@ function myFunction() {
  */
 function  saveUserProfileToDynamoDB(profile){
 	
-	// Initialize the Amazon Cognito credentials provider
-    AWS.config.region = 'us-east-1'; // Region
-    AWS.config.credentials = new AWS.CognitoIdentityCredentials({
-        IdentityPoolId: 'us-east-1:d640cf23-7fca-44bc-9af0-dd362df3b1c9',
-	});
 	
 	/*AWS.config.region = 'us-east-1'; // 1. Enter your region
     AWS.config.credentials = new AWS.CognitoIdentityCredentials({
@@ -73,13 +58,10 @@ function  saveUserProfileToDynamoDB(profile){
 
     });
 	 */  
-    var dynamodb = new AWS.DynamoDB();
-  	var docClient = new AWS.DynamoDB.DocumentClient();
 	var currentDate = new Date();
 	
 	//Check whether user exist in database
 	var isExistingUser=false;
-	var table = "user";
     
 	var paramsForUpdate = {
         TableName:table,
@@ -180,15 +162,7 @@ function readURL(input) {
  * API to upload Pic to S3
  */
 function uploadPic(){
-	   AWS.config.region = 'us-east-1'; // Region
-	    AWS.config.credentials = new AWS.CognitoIdentityCredentials({
-	        IdentityPoolId: 'us-east-1:d640cf23-7fca-44bc-9af0-dd362df3b1c9',
-	    });
-
- AWS.config.credentials.get(function(err) {
-   if (err) alert(err);
-   console.log(AWS.config.credentials);
- });
+	
 
 var bucketName = 'snapsnus2'; 
 var bucket = new AWS.S3({
@@ -231,15 +205,8 @@ $('#modaldialog').hide();
 
  
 
-
 	function populateFollowingList()
-	{
-		// Initialize the Amazon Cognito credentials provider
-		AWS.config.region = 'us-east-1'; // Region
-		AWS.config.credentials = new AWS.CognitoIdentityCredentials({
-			IdentityPoolId: 'us-east-1:d640cf23-7fca-44bc-9af0-dd362df3b1c9',
-		});
-		var docClient = new AWS.DynamoDB.DocumentClient();
+	{		
 		
 		var params = {
 			TableName : "user",
@@ -275,13 +242,6 @@ $('#modaldialog').hide();
 
 	function populatePreferences()
 	{
-		// Initialize the Amazon Cognito credentials provider
-		AWS.config.region = 'us-east-1'; // Region
-		AWS.config.credentials = new AWS.CognitoIdentityCredentials({
-			IdentityPoolId: 'us-east-1:d640cf23-7fca-44bc-9af0-dd362df3b1c9',
-		});
-
-		var docClient = new AWS.DynamoDB.DocumentClient();
 		var params = {
     	TableName : "user",
     	Key : {
@@ -378,19 +338,8 @@ $('#modaldialog').hide();
    * API to Get Image List from S3
    */
   function getImage(profileid)
-  {
-	// Initialize the Amazon Cognito credentials provider
-    AWS.config.region = 'us-east-1'; // Region
-    AWS.config.credentials = new AWS.CognitoIdentityCredentials({
-        IdentityPoolId: 'us-east-1:d640cf23-7fca-44bc-9af0-dd362df3b1c9',
-    });
-
-	    AWS.config.credentials.get(function(err) {
-	      if (err) alert(err);
-	      console.log(AWS.config.credentials);
-	    });
-	    
-	    var bucketName = 'snapsnus2';
+  {   	    
+	  var bucketName = 'snapsnus2';
 	  var s3Bucket = new AWS.S3({
 	      params: {
 	          Bucket: bucketName
@@ -439,11 +388,6 @@ $('#modaldialog').hide();
   
 function AddToPreferences(attribute)
 {
-		// Initialize the Amazon Cognito credentials provider
-		AWS.config.region = 'us-east-1'; // Region
-		AWS.config.credentials = new AWS.CognitoIdentityCredentials({
-			IdentityPoolId: 'us-east-1:d640cf23-7fca-44bc-9af0-dd362df3b1c9',
-		});
 		var DB = new AWS.DynamoDB.DocumentClient();
 
 		var table = "user";
@@ -478,11 +422,6 @@ function onLikeEvent(bucketname, bucket,key)
       Bucket: bucketname,
       Key: key
 	};
-	// Initialize the Amazon Cognito credentials provider
-    AWS.config.region = 'us-east-1'; // Region
-    AWS.config.credentials = new AWS.CognitoIdentityCredentials({
-        IdentityPoolId: 'us-east-1:d640cf23-7fca-44bc-9af0-dd362df3b1c9',
-    });
 
     bucket.getObjectTagging(params, function(err,data)
     { 
@@ -556,5 +495,37 @@ function onLikeEvent(bucketname, bucket,key)
   function redirectProfilePage(elemVar){
 		var profileEmail = document.getElementById('resource_name').value;
 		window.location.href =  "SearchProfile.html?profileId="+profileEmail;
+  }
+  
+  
+  
+  //API to get the user profile for the searching profile
+  function getUserprofile(profileId)
+  {
+	  var profile;
+	  var params = {
+				TableName : "user",
+				Key : {
+					"userId" : profileId,
+	                "userName":"sharanya menon"
+				},
+				ProjectionExpression : "userProfile"
+
+			};
+		docClient.get(params,function(err, data) {
+								if (err) {
+									console.log("Error occurred");
+								} else {
+									profile = JSON.stringify(data, undefined, 2);
+									console.log(data);
+									if (data.Item.userProfile != "") {
+										var src = data.Item.userProfile;
+										 $("#profilePic").attr('src',src);
+										  $("#pName").text("Sharanya Menon");
+									}
+								}
+							});
+		
+	  
   }
   
