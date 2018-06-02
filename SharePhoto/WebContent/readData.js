@@ -591,7 +591,12 @@ function   checkFollowing(profileid,profilename){
 			ProjectionExpression : "following"
 
 		};
-	
+	if(googleUserName==profileid)
+		{
+		$("#follow").addClass("hide");
+   	 $("#unfollow").removeClass("hide");
+		}
+	else{
 	docClient.get(params,function(err, data) {
 							if (err) {
 								console.log("Error occurred");
@@ -608,4 +613,5 @@ function   checkFollowing(profileid,profilename){
 								}
 							}
 						});
+}
 }

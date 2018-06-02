@@ -487,13 +487,13 @@ function redirectProfilePage(elemVar) {
 }
 
 //API to get the user profile for the searching profile
-function getUserprofile(profileId) {
+function getUserprofile(profileId,profilename) {
 	var profile;
 	var params = {
 		TableName : "user",
 		Key : {
 			"userId" : profileId,
-			"userName" : "sharanya menon"
+			"userName" : profilename
 		},
 		ProjectionExpression : "userProfile"
 
@@ -507,7 +507,7 @@ function getUserprofile(profileId) {
 			if (data.Item.userProfile != "") {
 				var src = data.Item.userProfile;
 				$("#profilePic").attr('src', src);
-				$("#pName").text("Sharanya Menon");
+				$("#pName").text(profilename);
 			}
 		}
 	});
