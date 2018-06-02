@@ -191,6 +191,7 @@ function uploadPic() {
 				console.log(err);
 			} else {
 				alert("Image uploaded successfully!");
+				location.reload();
 			}
 		});
 	} else {
@@ -320,6 +321,9 @@ function shuffle(array) {
 
 function createDiv(p) {
 	recommendation_list = shuffle(recommendation_list);
+	if(recommendation_list.length<=0){
+		alert("Recommendations not available");
+	}
 	var d = document.getElementById('items');
 	console.log("in creatediv");
 	

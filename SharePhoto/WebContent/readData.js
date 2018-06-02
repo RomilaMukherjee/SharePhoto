@@ -167,13 +167,14 @@ function showOnUI(data, condition) {
 	document.write("<script type=\"text\/javascript\" src=\"js\/main.js\"><\/script>");
 
 	
-	document.write("<h4 class=\"small-heading more-margin-bottom\">"
+	document.write("<h4 class=\"coloured-text\">"
 			+ condition.toUpperCase() + "<\/h4>");
 	document.write("<div class=\"row\">");
 	document.write("	<div class=\"col-sm-4\" id=\"main_list\">");
 
 	if (condition.toString() == "followers") {
-		if(data!=undefined && data.Item.followers.length>0){
+		if(data!=undefined && data.Item != undefined && data.Item.followers != undefined
+				&& data.Item.followers.length > 0){
 			for (i = 0; i < data.Item.followers.length; i++) {
 				var userName = data.Item.followers[i].userName;
 				var userId = data.Item.followers[i].userId;
@@ -191,7 +192,7 @@ function showOnUI(data, condition) {
 				var userIDNo = "userId_" + i;
 				document.write("		<div class=\"media user-card-sm\">");
 				document
-						.write("			<a class=\"media-left\" href=\"#\"> ");
+						.write("			<a class=\"media-left\"> ");
 				document
 						.write("			<img id=\"profilePic\" class=\"img-circle\" width=\"70\" height=\"70\">");
 				document.write("			<\/a>");
@@ -214,12 +215,15 @@ function showOnUI(data, condition) {
 				document.write("		<\/div>");
 			}
 		}else{
-			///
+			document.write("<div class=\"col-md-8 col-sm-6 section-title text-center\">");
+			document.write("	        <h3><i>You have no followers<\/i><\/h3><br><br>");
+			document.write("		<\/div>");
 		}
 	}
 
 	else {
-		if(data!=undefined && data.Item.following.length>0){
+		if(data!=undefined && data.Item != undefined && data.Item.following != undefined
+				&& data.Item.following.length > 0){
 			for (i = 0; i < data.Item.following.length; i++) {
 				var userName = data.Item.following[i].userName;
 				var userId = data.Item.following[i].userId;
@@ -228,15 +232,15 @@ function showOnUI(data, condition) {
 				var userIDNo = "userId_" + i;
 				document.write("		<div class=\"media user-card-sm\">");
 				document
-						.write("			<a class=\"media-left\" href=\"#\"> ");
+						.write("			<a class=\"media-left\"> ");
 				document
 						.write("			<img id=\"profilePic\" class=\"img-circle\" width=\"70\" height=\"70\">");
 				document.write("			<\/a>");
 				document.write("			<div class=\"media-body\">");
 
-				var nameStr = "				<h4 id=" + userNameId
+				var nameStr = "				<a id=" + userNameId
 						+ " onclick=\"viewProfile(this)\" class=\"media-heading\">"
-						+ userName + "<\/h4>";
+						+ userName + "<\/a>";
 				document.write(nameStr);
 				var idStr = "<p id=" + userIDNo + " class=\"text-success\">"
 						+ userId + "<\/p>";
@@ -251,7 +255,9 @@ function showOnUI(data, condition) {
 				document.write("		<\/div>");
 			}
 		}else{
-			///
+			document.write("<div class=\"col-md-8 col-sm-6 section-title text-center\">");
+			document.write("	        <h3><i>You are not following anyone!!!<\/i><\/h3><br><br>");
+			document.write("		<\/div>");
 		}
 	}
 
@@ -268,7 +274,7 @@ function showOnUI(data, condition) {
 	document.write("    ================================================== -->");
 	document.write("<link rel=\"stylesheet\" type=\"text\/css\"  href=\"css\/style1.css\">");
 	document.write("");
-	document.write("<div id=\"footer\">");
+	document.write("<div id=\"footer_fixed\">");
 	document.write("  <div class=\"container text-center\">");
 	document.write("    <div class=\"fnav\">");
 	document.write("      <p>2016 Snap Share.<\/p>");
@@ -284,12 +290,15 @@ function showOnUI(data, condition) {
 
 function checkIfPresentInFollowing(data, userId) {
 	var isinFollowing = false;
-	for (ind = 0; ind < data.Item.following.length; ind++) {
-		if (data.Item.following[ind].userId == userId) {
-			isinFollowing = true;
-			break;
+	if (data!=undefined && data.Item != undefined && data.Item.following != undefined
+			&& data.Item.following.length > 0) {
+		for (ind = 0; ind < data.Item.following.length; ind++) {
+			if (data.Item.following[ind].userId == userId) {
+				isinFollowing = true;
+				break;
+			}
 		}
-	}
+	} 
 	return isinFollowing;
 
 }
@@ -473,7 +482,6 @@ function AddToFollowing(name, emailID) {
 						}
 					}).promise()
 
-	AddToTheirFollowers(name, emailID)
 
 }
 
@@ -591,27 +599,32 @@ function   checkFollowing(profileid,profilename){
 			ProjectionExpression : "following"
 
 		};
-	if(googleUserName==profileid)
-		{
-		$("#follow").addClass("hide");
-   	 $("#unfollow").removeClass("hide");
-		}
-	else{
+	
 	docClient.get(params,function(err, data) {
 							if (err) {
 								console.log("Error occurred");
 							} else {
 								following = JSON.stringify(data, undefined, 2);
 								console.log(data);
+								if(data.Item.following.length >0)
+									{
 								for (i = 0; i < data.Item.following.length; i++) {
 									var id = data.Item.following[i].userId;
 							        if(id==profileid)
 							        	{
-							        	 $("#follow").addClass("hide");
 							        	 $("#unfollow").removeClass("hide");
-							        	}						        	
+							        	}
+							        else
+							        	{
+							        	 $("#follow").removeClass("hide");
+							        	}
 								}
+									}
+								else
+									{
+									 $("#follow").removeClass("hide");
+									}
 							}
 						});
 }
-}
+

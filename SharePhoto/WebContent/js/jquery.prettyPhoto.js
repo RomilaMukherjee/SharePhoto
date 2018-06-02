@@ -127,7 +127,7 @@ function viewImg(img,profileid,profilename)
 	populatePreferences();
 	console.log(prefList);
 
-	var key = parseURL("https://s3.amazonaws.com/snapsnus2/toshimishra5%40gmail.com/sky-clouds-airplane-46148.jpg");
+	var key = parseURL(imgSrc);
 	var s3Bucket = new AWS.S3({
 		params : {
 			Bucket : 'snapsnus2'
@@ -228,7 +228,14 @@ function viewImg(img,profileid,profilename)
 		var x = "";
 		var y = getLocation(url);
 		var l = y.pathname;
-		for(var i = 11;i<l.length;i++)
+		/*var end = l.length;
+		for(var i =0;i<l.length;i++)
+		{
+			if(l.charAt(i)=='?')
+				end = i;
+
+		}*/
+		for(var i = 1;i<l.length;i++)
 			{
 			if(l.charAt(i)=='%')
 				{
