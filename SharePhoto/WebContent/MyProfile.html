@@ -26,16 +26,6 @@
 	<script src="https://sdk.amazonaws.com/js/aws-sdk-2.1.12.min.js"></script>
 	<script src="https://sdk.amazonaws.com/js/aws-sdk-2.16.0.min.js"></script>
 <script type="text/javascript" src="login.js"></script>
-<script type="text/javascript" src="lib/axios/dist/axios.standalone.js"></script>
-<script type="text/javascript" src="lib/CryptoJS/rollups/hmac-sha256.js"></script>
-<script type="text/javascript" src="lib/CryptoJS/rollups/sha256.js"></script>
-<script type="text/javascript" src="lib/CryptoJS/components/hmac.js"></script>
-<script type="text/javascript" src="lib/CryptoJS/components/enc-base64.js"></script>
-<script type="text/javascript" src="lib/url-template/url-template.js"></script>
-<script type="text/javascript" src="lib/apiGatewayCore/sigV4Client.js"></script>
-<script type="text/javascript" src="lib/apiGatewayCore/apiGatewayClient.js"></script>
-<script type="text/javascript" src="lib/apiGatewayCore/simpleHttpClient.js"></script>
-<script type="text/javascript" src="lib/apiGatewayCore/utils.js"></script>
 <script type="text/javascript" src="apigClient.js"></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 	<script src="https://apis.google.com/js/platform.js" async defer></script>
@@ -109,11 +99,10 @@
                      <div class="modal-content" id="modelpopup">      
                        <div class="modal-header">
                           <button type="button" class="close" data-dismiss="modal">&times;</button>
-                          <h4 class="modal-title">Upload Snap</h4>
+                          <h4 class="modal-title">Choose Snap to Post</h4>
                        </div>
                        
                     <div class="modal-body">
-                       <h4 align="left">Choose Snap to Post</h4>
                        <input type="file" id="file-chooser"  onchange="readURL(this);"/> <br>
                       
                        <img src="" id="profile-img-tag" width="200px"/> 

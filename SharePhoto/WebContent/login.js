@@ -187,6 +187,7 @@ function uploadPic() {
 				console.log(err);
 			} else {
 				alert("Image uploaded successfully!");
+				location.reload();
 			}
 		});
 	} else {

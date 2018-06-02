@@ -94,7 +94,7 @@
                
         <h2>Snap !! Share !! Smile !!</h2>
       
-           <button type="button" id="follow" class="btn btn-info btn-lg" align ="left">Follow</button>
+           <button type="button" id="follow" class="btn btn-info btn-lg hide" align ="left">Follow</button>
            <button type="button" id="unfollow" class="btn btn-info btn-lg hide" align ="left">UnFollow</button>
         </div>
       </div>
@@ -130,14 +130,16 @@
 <script type="text/javascript">
 var follow=document.getElementById("follow");
     follow.addEventListener("click", function(){
+    	$("#follow").addClass("hide");
+    	$("#unfollow").removeClass("hide");
     	AddToFollowing(profilename,profileid);
-    	checkFollowing(profileid,profilename);
     });
     
     var unfollow=document.getElementById("unfollow");
     unfollow.addEventListener("click", function(){
+    	$("#unfollow").addClass("hide");
+    	$("#follow").removeClass("hide");
     	getIndex(profileid,"following",loggeduserid,loggedname,profilename);
-    	checkFollowing(profileid,profilename);
     });
  </script>
 </body>

@@ -367,6 +367,7 @@ function getIndex(pToCheckId, pProjectionExpression, pUserID, pUserName,
 		 	
 	  }
 	});
+	
 	return index;
 }
 
@@ -473,7 +474,7 @@ function AddToFollowing(name, emailID) {
 						}
 					}).promise()
 
-	AddToTheirFollowers(name, emailID)
+	AddToTheirFollowers(name, emailID);
 
 }
 
@@ -591,27 +592,32 @@ function   checkFollowing(profileid,profilename){
 			ProjectionExpression : "following"
 
 		};
-	if(googleUserName==profileid)
-		{
-		$("#follow").addClass("hide");
-   	 $("#unfollow").removeClass("hide");
-		}
-	else{
+	
 	docClient.get(params,function(err, data) {
 							if (err) {
 								console.log("Error occurred");
 							} else {
 								following = JSON.stringify(data, undefined, 2);
 								console.log(data);
+								if(data.Item.following.length >0)
+									{
 								for (i = 0; i < data.Item.following.length; i++) {
 									var id = data.Item.following[i].userId;
 							        if(id==profileid)
 							        	{
-							        	 $("#follow").addClass("hide");
 							        	 $("#unfollow").removeClass("hide");
-							        	}						        	
+							        	}
+							        else
+							        	{
+							        	 $("#follow").removeClass("hide");
+							        	}
 								}
+									}
+								else
+									{
+									 $("#follow").removeClass("hide");
+									}
 							}
 						});
 }
-}
+
