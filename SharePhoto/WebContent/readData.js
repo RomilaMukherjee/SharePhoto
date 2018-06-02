@@ -202,7 +202,7 @@ function showOnUI(data, condition) {
 						+ " onclick=\"viewProfile(this)\" class=\"media-heading\">"
 						+ userName + "<\/a>";
 				document.write(nameStr);
-				var idStr = "<p id=" + userIDNo + " class=\"text-success\">"
+				var idStr = "<p hidden id=" + userIDNo + " class=\"text-success\">"
 						+ userId + "<\/p>";
 				document.write(idStr);
 				document.write("			<\/div>");
@@ -242,7 +242,7 @@ function showOnUI(data, condition) {
 						+ " onclick=\"viewProfile(this)\" class=\"media-heading\">"
 						+ userName + "<\/a>";
 				document.write(nameStr);
-				var idStr = "<p id=" + userIDNo + " class=\"text-success\">"
+				var idStr = "<p hidden id=" + userIDNo + " class=\"text-success\">"
 						+ userId + "<\/p>";
 				document.write(idStr);
 				document.write("			<\/div>");
