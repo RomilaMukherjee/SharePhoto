@@ -21,35 +21,7 @@ var table = "user";
 
 function likeImg()
 {  
-
-	var apigClient = apigClientFactory.newClient();
-	   
-    
-	var apigClient = apigClientFactory.newClient({
-		IdentityPoolId: 'us-east-1:d640cf23-7fca-44bc-9af0-dd362df3b1c9'
-		});
-	
-	
-	
-	var nparams = {
-			  // This is where any modeled request parameters should be added.
-			  // The key is the parameter name, as it is defined in the API in API Gateway.
-			  "userId" : profileId,
-			  "userName":profileName,
-			  "img":imgSrc
-			};
-
 		
-
-			apigClient.likePost(nparams)
-			    .then(function(result){
-			    	console.log(result.data);
-			      // Add success callback code here.
-			    }).catch( function(result){
-			    	console.log("error");
-			      // Add error callback code here.
-			    });
-			
     var params= {
     		TableName:table,
             Key:{
@@ -83,7 +55,7 @@ function likeImg()
         } else {
             console.log("Update Successful");
             $("#like").hide();
-            
+            $("#unlike").removeClass("hide");
         }
     	});	  
    
@@ -125,18 +97,8 @@ function viewImg(img,profileid,profilename)
 
 	//TODO Toshi Cleanup Test code
 	populatePreferences();
-	console.log(prefList);
-
-	var key = parseURL(imgSrc);
-	var s3Bucket = new AWS.S3({
-		params : {
-			Bucket : 'snapsnus2'
-		}
-	});
 	
-	console.log(prefList);
 
-	onLikeEvent('snapsnus2',s3Bucket,key);
 
 	var params = {
 			TableName : "user",
@@ -153,6 +115,11 @@ function viewImg(img,profileid,profilename)
 							} else {
 								likes = JSON.stringify(data, undefined, 2);
 								console.log(data);
+								if(data.Item.likes.length == 0)
+									{
+									return;
+									}
+								else{									
 								for (i = 0; i < data.Item.likes.length; i++) {
 									var src = data.Item.likes[i].Value;
 							        if(src==imgSrc)
@@ -160,6 +127,7 @@ function viewImg(img,profileid,profilename)
 							        	 $("#like").addClass("hide");
 							        	 $("#unlike").removeClass("hide");
 							        	}
+								}
 								}
 							}
 						});
