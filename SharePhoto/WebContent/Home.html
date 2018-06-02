@@ -81,6 +81,34 @@
 		});
 		 return false;
 	});	
+	
+	function createPreferences(){
+		
+		$.ajax({
+			 type:'GET',
+			 url:RECO_API_URL,
+			 contentType:"application/json",
+			 
+			 success:function(data){
+       preferences_list = [];
+       for(var i = 0;i<data.preferences.length;i++)
+       {
+         preferences_list[data.preferences[i]] = true;
+       }
+
+       for(var i =0;i<data.recommendation.length;i++)
+       {
+         recommendation_list[i] = data.recommendation[i];
+       }
+       createDiv();
+       
+			
+			}
+		});
+		 return false;
+		
+		
+	}
 </script>
 	
 	
@@ -139,7 +167,7 @@
 		</select>
         <br><br>
         <button type="button" class="btn btn-info btn-lg" align ="left">Dashboard</button>
-        <button type="button" class="btn btn-info btn-lg" align ="left" onclick="createDiv();">Recommendations</button>
+        <button type="button" class="btn btn-info btn-lg" align ="left" onclick="createPreferences();">Recommendations</button>
         <button type="button" class="btn btn-info btn-lg" align ="left" data-toggle="modal" data-target="#myModal">Post Snap</button>
         
        
