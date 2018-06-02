@@ -52,6 +52,30 @@
 		 return false;
 	});	
 </script>
+
+<script type="text/javascript">
+	//var API_URL ="https://f966d1zhff.execute-api.ap-southeast-1.amazonaws.com/prod/RetrieveUsers";
+	var RECO_API_URL="https://yqaciy8fwc.execute-api.us-east-1.amazonaws.com/Prod/getRecommendations";
+
+	$(function() {
+		 $.ajax({
+			 type:'GET',
+			 url:RECO_API_URL,
+			 contentType:"application/json",
+			 
+			 success:function(data){
+
+        for(var i =0;i<data.recommendation.length;i++)
+        {
+          recommendation_list[i] = data.recommendation[i];
+        }
+        createDiv();
+			
+			}
+		});
+		 return false;
+	});	
+</script>
 	
 	
 <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->

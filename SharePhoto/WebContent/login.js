@@ -33,7 +33,7 @@ function getprofiledetails(){
 	  $("#pName").text(finalvalue.ig);
 	  useremail= finalvalue.U3;
 	  username=finalvalue.ig;
-	  populatePreferences();
+	  //populatePreferences();
 	  
 }
 
