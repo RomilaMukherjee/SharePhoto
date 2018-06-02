@@ -197,9 +197,9 @@ function showOnUI(data, condition) {
 				document.write("			<\/a>");
 				document.write("			<div class=\"media-body\">");
 
-				var nameStr = "				<h4 id=" + userNameId
+				var nameStr = "				<a id=" + userNameId
 						+ " onclick=\"viewProfile(this)\" class=\"media-heading\">"
-						+ userName + "<\/h4>";
+						+ userName + "<\/a>";
 				document.write(nameStr);
 				var idStr = "<p id=" + userIDNo + " class=\"text-success\">"
 						+ userId + "<\/p>";
@@ -299,8 +299,14 @@ function viewProfile(userName) {
 	var id = userName.id.split("_").pop();
 	var elementId= "userId_"+id;
 	otherProfileId = document.getElementById(elementId).textContent;
-	localStorage.setItem('otherProfileId', otherProfileId);
-	window.location.href =  "SearchProfile.html?profileId="+otherProfileId+"&profileName="+otherProfileName;
+	
+	var paramProfile = otherProfileId+"&profileValue="+otherProfileName;
+	var encodedString = btoa(paramProfile);
+	window.location.href = "SearchProfile.html?profileId=" + encodedString;
+	
+	
+//	localStorage.setItem('otherProfileId', otherProfileId);
+//	window.location.href =  "SearchProfile.html?profileId="+otherProfileId+"&profileName="+otherProfileName;
 //	window.location.href = "SearchProfile.html";
 }
 
