@@ -47,7 +47,7 @@ function getprofiledetails() {
 function saveUserProfileToDynamoDB(profile) {
 	//Check whether user exist in database
 	var isExistingUser = false;
-
+	var currentDate = Date.now();
 	var paramsForUpdate = {
 		TableName : table,
 		Key : {
