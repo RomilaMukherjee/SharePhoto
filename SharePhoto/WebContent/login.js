@@ -326,6 +326,12 @@ function createDiv(p) {
 		alert("Recommendations not available");
 	}
 	var d = document.getElementById('items');
+	
+	var myNode = document.getElementById("items");
+	while (myNode.firstChild) {
+	    myNode.removeChild(myNode.firstChild);
+	}
+	
 	console.log("in creatediv");
 	
 	for (var i = 0; i < recommendation_list.length; i++) {
