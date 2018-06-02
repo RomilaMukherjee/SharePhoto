@@ -167,7 +167,7 @@ function showOnUI(data, condition) {
 	document.write("<script type=\"text\/javascript\" src=\"js\/main.js\"><\/script>");
 
 	
-	document.write("<h4 class=\"small-heading more-margin-bottom\">"
+	document.write("<h4 class=\"coloured-text\">"
 			+ condition.toUpperCase() + "<\/h4>");
 	document.write("<div class=\"row\">");
 	document.write("	<div class=\"col-sm-4\" id=\"main_list\">");
