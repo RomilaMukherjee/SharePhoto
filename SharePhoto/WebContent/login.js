@@ -192,6 +192,7 @@ function uploadPic() {
 		});
 	} else {
 		alert('Nothing to upload.');
+		location.reload();
 	}
 
 	$('#modaldialog').hide();
