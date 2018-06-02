@@ -487,9 +487,11 @@ color: #ccc;
 #footer {
 	background: #03252b;
 	padding: 25px 0 20px 0;
-	position:fixed;
+	position:relative;
 	bottom:0px;
 	width:100%;
+	overflow: visible;
+	
 }
 #footer p {
 	font-size: 13px;
@@ -498,6 +500,25 @@ color: #ccc;
 	color: #aaa;
 }
 #footer a:hover {
+	color: #25BAD0;
+}
+
+#footer_fixed {
+	background: #03252b;
+	padding: 25px 0 20px 0;
+	position:fixed;
+	bottom:0px;
+	width:100%;
+	overflow: visible;
+	
+}
+#footer_fixed p {
+	font-size: 13px;
+}
+#footer_fixed a {
+	color: #aaa;
+}
+#footer_fixed a:hover {
 	color: #25BAD0;
 }
 

@@ -173,7 +173,8 @@ function showOnUI(data, condition) {
 	document.write("	<div class=\"col-sm-4\" id=\"main_list\">");
 
 	if (condition.toString() == "followers") {
-		if(data!=undefined && data.Item.followers.length>0){
+		if(data!=undefined && data.Item != undefined && data.Item.followers != undefined
+				&& data.Item.followers.length > 0){
 			for (i = 0; i < data.Item.followers.length; i++) {
 				var userName = data.Item.followers[i].userName;
 				var userId = data.Item.followers[i].userId;
@@ -221,7 +222,8 @@ function showOnUI(data, condition) {
 	}
 
 	else {
-		if(data!=undefined && data.Item.following.length>0){
+		if(data!=undefined && data.Item != undefined && data.Item.following != undefined
+				&& data.Item.following.length > 0){
 			for (i = 0; i < data.Item.following.length; i++) {
 				var userName = data.Item.following[i].userName;
 				var userId = data.Item.following[i].userId;
@@ -272,7 +274,7 @@ function showOnUI(data, condition) {
 	document.write("    ================================================== -->");
 	document.write("<link rel=\"stylesheet\" type=\"text\/css\"  href=\"css\/style1.css\">");
 	document.write("");
-	document.write("<div id=\"footer\">");
+	document.write("<div id=\"footer_fixed\">");
 	document.write("  <div class=\"container text-center\">");
 	document.write("    <div class=\"fnav\">");
 	document.write("      <p>2016 Snap Share.<\/p>");
@@ -288,7 +290,7 @@ function showOnUI(data, condition) {
 
 function checkIfPresentInFollowing(data, userId) {
 	var isinFollowing = false;
-	if (data.Item != undefined && data.Item.following != undefined
+	if (data!=undefined && data.Item != undefined && data.Item.following != undefined
 			&& data.Item.following.length > 0) {
 		for (ind = 0; ind < data.Item.following.length; ind++) {
 			if (data.Item.following[ind].userId == userId) {
