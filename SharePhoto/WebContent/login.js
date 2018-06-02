@@ -158,6 +158,11 @@ function readURL(input) {
  * API to upload Pic to S3
  */
 function uploadPic() {
+	//TODO Toshi cleanup
+	AddToPreferences("Moon");
+	AddToPreferences("Airplane");
+	AddToPreferences("Burger");
+	console.log(preferences_list);
 
 	var bucketName = 'snapsnus2';
 	var bucket = new AWS.S3({
@@ -256,6 +261,10 @@ function searchProfile(searchString) {
 	});
 
 }
+function getPreferencesList()
+{
+	return preferences_list;
+}
 
 function AddToPreferences(attribute) {
 	var DB = new AWS.DynamoDB.DocumentClient();
@@ -288,31 +297,7 @@ function AddToPreferences(attribute) {
 }
 var attributes = [];
 
-function onLikeEvent(bucketname, bucket, key) {
 
-	var params = {
-		Bucket : bucketname,
-		Key : key
-	};
-
-	bucket.getObjectTagging(params, function(err, data) {
-
-		if (err)
-			console.log(err, err.stack); // an error occurred
-		else {// successful response
-
-			for (var i = 0; i < data.TagSet.length; i++) {
-				attributes[i] = data.TagSet[i].Value;
-				AddToPreferences(attributes[i]);
-
-			}
-			console.log("Attributes " + attributes);
-			//AddToPreferences(attributes);
-
-		}
-	});
-
-}
 
 function shuffle(array) {
 	var currentIndex = array.length, temporaryValue, randomIndex;
@@ -333,10 +318,11 @@ function shuffle(array) {
 	return array;
 }
 
-function createDiv() {
+function createDiv(p) {
 	recommendation_list = shuffle(recommendation_list);
 	var d = document.getElementById('items');
 	console.log("in creatediv");
+	
 	for (var i = 0; i < recommendation_list.length; i++) {
 		var iDiv = document.createElement('div');
 		iDiv.id = 'list' + i;

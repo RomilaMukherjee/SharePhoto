@@ -5,6 +5,8 @@
 	Version: 3.1.5
 ------------------------------------------------------------------------- */
 var imgSrc, profileId , profileName, key;
+var prefList = [];
+var attributes =[];
 AWS.config.region = 'us-east-1'; // Region
 AWS.config.credentials = new AWS.CognitoIdentityCredentials({
     IdentityPoolId: 'us-east-1:d640cf23-7fca-44bc-9af0-dd362df3b1c9',
@@ -62,6 +64,16 @@ function likeImg()
     		}
     };
   
+	//Calling API to update preferences
+	var key = parseURL(imgSrc);
+	var s3Bucket = new AWS.S3({
+		params : {
+			Bucket : 'snapsnus2'
+		}
+	});
+
+
+	onLikeEvent('snapsnus2',s3Bucket,key);
     
     if(imgSrc != 'undefined')
     {
@@ -108,8 +120,24 @@ function viewImg(img,profileid,profilename)
 	profileId=profileid;
 	imgSrc=img.src;
 	profileName=profilename;
-	console.log(img);
 	
+	console.log(img);
+
+	//TODO Toshi Cleanup Test code
+	populatePreferences();
+	console.log(prefList);
+
+	var key = parseURL("https://s3.amazonaws.com/snapsnus2/toshimishra5%40gmail.com/sky-clouds-airplane-46148.jpg");
+	var s3Bucket = new AWS.S3({
+		params : {
+			Bucket : 'snapsnus2'
+		}
+	});
+	
+	console.log(prefList);
+
+	onLikeEvent('snapsnus2',s3Bucket,key);
+
 	var params = {
 			TableName : "user",
 			Key : {
@@ -138,3 +166,102 @@ function viewImg(img,profileid,profilename)
 	
 		
 	}
+	function onLikeEvent(bucketname, bucket, key) {
+
+		var params = {
+			Bucket : bucketname,
+			Key : key
+		};
+		attributes = [];
+		bucket.getObjectTagging(params, function(err, data) {
+	
+			if (err)
+				console.log(err, err.stack); // an error occurred
+			else {// successful response
+	
+				for (var i = 0; i < data.TagSet.length; i++) {
+					attributes[i] = data.TagSet[i].Value;
+					AddToPreferences(attributes[i]);
+	
+				}
+			}
+		});
+	
+	}
+	function AddToPreferences(attribute) {
+		
+	
+		var table = "user";
+	
+		// Add to prefernces only if previoulsy non existent
+		
+		if (prefList[attribute] != true) {
+			return DB
+					.update(
+							{
+								TableName : table,
+								Key : {
+									"userId" : profileId,
+									"userName" : profileName
+								},
+								ReturnValues : 'ALL_NEW',
+								UpdateExpression : 'set preferences = list_append(if_not_exists(preferences, :empty_list), :array)',
+								ExpressionAttributeValues : {
+									':array' : [ {
+										"Value" : attribute
+									} ],
+									':empty_list' : []
+								}
+							}).promise()
+	
+		}
+	
+	}
+	var getLocation = function(href) {
+		var l = document.createElement("a");
+		l.href = href;
+		return l;
+	};
+	function parseURL(url)
+	{
+		
+		var x = "";
+		var y = getLocation(url);
+		var l = y.pathname;
+		for(var i = 11;i<l.length;i++)
+			{
+			if(l.charAt(i)=='%')
+				{
+				x = x+'@';
+				i = i+2;
+				}
+			else
+				x = x+ l.charAt(i);
+			
+			}
+			return x;
+	}
+	function populatePreferences() {
+		var params = {
+			TableName : "user",
+			Key : {
+				"userId" : profileId,
+				"userName" : profileName
+	
+			},
+			ProjectionExpression : "preferences"
+	
+		};
+		DB.get(params, function(err, data) {
+			if (err) {
+				console.log(err);
+			} else {
+				for (var i = 0; i < data.Item.preferences.length; i++) {
+					prefList[data.Item.preferences[i].Value] = true;
+				}
+			
+			}
+		});
+	
+	}
+	

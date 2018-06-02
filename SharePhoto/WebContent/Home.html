@@ -64,12 +64,18 @@
 			 contentType:"application/json",
 			 
 			 success:function(data){
+        preferences_list = [];
+        for(var i = 0;i<data.preferences.length;i++)
+        {
+          preferences_list[data.preferences[i]] = true;
+        }
 
         for(var i =0;i<data.recommendation.length;i++)
         {
           recommendation_list[i] = data.recommendation[i];
         }
         createDiv();
+        
 			
 			}
 		});
