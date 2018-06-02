@@ -487,6 +487,9 @@ color: #ccc;
 #footer {
 	background: #03252b;
 	padding: 25px 0 20px 0;
+	position:fixed;
+	bottom:0px;
+	width:100%;
 }
 #footer p {
 	font-size: 13px;

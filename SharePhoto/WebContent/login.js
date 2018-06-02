@@ -214,13 +214,17 @@ function populateFollowingList() {
 		if (err) {
 			console.log(err, err.stack);
 		} else {
+			if(data.Item !=undefined && data.Item.following !=undefined && data.Item.following.length>0){
+				for (var i = 0; i < data.Item.following.length; i++) {
+					following[i] = data.Item.following[i].userId;
+					console.log(i + " " + following[i]);
 
-			for (var i = 0; i < data.Item.following.length; i++) {
-				following[i] = data.Item.following[i].userId;
-				console.log(i + " " + following[i]);
-
+				}
+				ListReco(following, preferences_list);
 			}
-			ListReco(following, preferences_list);
+			else{
+				// TODO @TOSHI
+			}
 		}
 	});
 

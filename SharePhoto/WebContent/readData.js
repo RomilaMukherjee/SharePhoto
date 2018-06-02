@@ -191,7 +191,7 @@ function showOnUI(data, condition) {
 				var userIDNo = "userId_" + i;
 				document.write("		<div class=\"media user-card-sm\">");
 				document
-						.write("			<a class=\"media-left\" href=\"#\"> ");
+						.write("			<a class=\"media-left\"> ");
 				document
 						.write("			<img id=\"profilePic\" class=\"img-circle\" width=\"70\" height=\"70\">");
 				document.write("			<\/a>");
@@ -214,7 +214,9 @@ function showOnUI(data, condition) {
 				document.write("		<\/div>");
 			}
 		}else{
-			///
+			document.write("<div class=\"col-md-8 col-sm-6 section-title text-center\">");
+			document.write("	        <h3><i>You have no followers<\/i><\/h3><br><br>");
+			document.write("		<\/div>");
 		}
 	}
 
@@ -228,15 +230,15 @@ function showOnUI(data, condition) {
 				var userIDNo = "userId_" + i;
 				document.write("		<div class=\"media user-card-sm\">");
 				document
-						.write("			<a class=\"media-left\" href=\"#\"> ");
+						.write("			<a class=\"media-left\"> ");
 				document
 						.write("			<img id=\"profilePic\" class=\"img-circle\" width=\"70\" height=\"70\">");
 				document.write("			<\/a>");
 				document.write("			<div class=\"media-body\">");
 
-				var nameStr = "				<h4 id=" + userNameId
+				var nameStr = "				<a id=" + userNameId
 						+ " onclick=\"viewProfile(this)\" class=\"media-heading\">"
-						+ userName + "<\/h4>";
+						+ userName + "<\/a>";
 				document.write(nameStr);
 				var idStr = "<p id=" + userIDNo + " class=\"text-success\">"
 						+ userId + "<\/p>";
@@ -251,7 +253,9 @@ function showOnUI(data, condition) {
 				document.write("		<\/div>");
 			}
 		}else{
-			///
+			document.write("<div class=\"col-md-8 col-sm-6 section-title text-center\">");
+			document.write("	        <h3><i>You are not following anyone!!!<\/i><\/h3><br><br>");
+			document.write("		<\/div>");
 		}
 	}
 
@@ -284,12 +288,15 @@ function showOnUI(data, condition) {
 
 function checkIfPresentInFollowing(data, userId) {
 	var isinFollowing = false;
-	for (ind = 0; ind < data.Item.following.length; ind++) {
-		if (data.Item.following[ind].userId == userId) {
-			isinFollowing = true;
-			break;
+	if (data.Item != undefined && data.Item.following != undefined
+			&& data.Item.following.length > 0) {
+		for (ind = 0; ind < data.Item.following.length; ind++) {
+			if (data.Item.following[ind].userId == userId) {
+				isinFollowing = true;
+				break;
+			}
 		}
-	}
+	} 
 	return isinFollowing;
 
 }
@@ -367,7 +374,6 @@ function getIndex(pToCheckId, pProjectionExpression, pUserID, pUserName,
 		 	
 	  }
 	});
-	
 	return index;
 }
 
@@ -474,7 +480,6 @@ function AddToFollowing(name, emailID) {
 						}
 					}).promise()
 
-	AddToTheirFollowers(name, emailID);
 
 }
 
