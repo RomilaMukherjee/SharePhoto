@@ -448,6 +448,9 @@ function shuffle(array) {
 
 function createDiv() {
 	recommendation_list = shuffle(recommendation_list);
+	if(recommendation_list.length<=0){
+		alert("Recommendations not available");
+	}
 	var d = document.getElementById('items');
 	console.log("in creatediv");
 	for (var i = 0; i < recommendation_list.length; i++) {
