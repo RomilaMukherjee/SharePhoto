@@ -30,12 +30,17 @@
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 	<script src="https://apis.google.com/js/platform.js" async defer></script>
 		<script type="text/javascript">
-	var profileid = window.location.search;
-	profileid = profileid.split("?")[1].split("=")[1];
-    var profile=getUserprofile(profileid);
-    var profilename="sharanya menon";
+	var encoded = window.location.search;
+	encoded = encoded.split("?")[1].split("=")[1];
+	var decodestring = atob(encoded);
+	var profileid=decodestring.split("&")[0];
+	var profilename= decodestring.split("&")[1].split("=")[1];
+    var profile=getUserprofile(profileid,profilename);
     getImage(profileid);
     checkFollowing(profileid,profilename);
+    var loggedinuser=getprofiledetails();
+	var loggeduserid=loggedinuser.U3;
+	var loggedname=loggedinuser.ig;
     	</script>
 	
 <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
@@ -126,6 +131,12 @@
 var follow=document.getElementById("follow");
     follow.addEventListener("click", function(){
     	AddToFollowing(profilename,profileid);
+    	checkFollowing(profileid,profilename);
+    });
+    
+    var unfollow=document.getElementById("unfollow");
+    unfollow.addEventListener("click", function(){
+    	getIndex(profileid,"following",loggeduserid,loggedname,profilename);
     	checkFollowing(profileid,profilename);
     });
  </script>
