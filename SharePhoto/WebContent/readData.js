@@ -606,7 +606,8 @@ function   checkFollowing(profileid,profilename){
 							} else {
 								following = JSON.stringify(data, undefined, 2);
 								console.log(data);
-								if(data.Item.following.length >0)
+								if(data!=undefined && data.Item != undefined && data.Item.following != undefined
+										&& data.Item.following.length > 0)
 									{
 								for (i = 0; i < data.Item.following.length; i++) {
 									var id = data.Item.following[i].userId;
