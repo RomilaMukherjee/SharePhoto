@@ -479,7 +479,11 @@ var prefers = [];
  */
 function redirectProfilePage(elemVar) {
 	var profileEmail = document.getElementById('resource_name').value;
-	window.location.href = "SearchProfile.html?profileId=" + profileEmail;
+	var selectComponent = document.getElementById('resource_name');
+	var profileText= selectComponent.options[selectComponent.selectedIndex].text;
+	var paramProfile = profileEmail+"&profileValue="+profileText;
+	var encodedString = btoa(paramProfile);
+	window.location.href = "SearchProfile.html?profileId=" + encodedString;
 }
 
 //API to get the user profile for the searching profile
