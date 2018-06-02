@@ -43,7 +43,7 @@ function likeImg()
         } else {
             console.log("Update Successful");
             $("#like").hide();
-            
+            $("#unlike").removeClass("hide");
         }
     	});	  
    
