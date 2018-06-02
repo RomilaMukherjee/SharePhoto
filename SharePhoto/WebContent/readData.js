@@ -300,7 +300,7 @@ function viewProfile(userName) {
 	var elementId= "userId_"+id;
 	otherProfileId = document.getElementById(elementId).textContent;
 	localStorage.setItem('otherProfileId', otherProfileId);
-	window.location.href =  "SearchProfile.html?profileId="+otherProfileId;
+	window.location.href =  "SearchProfile.html?profileId="+otherProfileId+"&profileName="+otherProfileName;
 //	window.location.href = "SearchProfile.html";
 }
 
