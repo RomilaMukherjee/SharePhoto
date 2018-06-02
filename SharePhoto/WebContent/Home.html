@@ -109,6 +109,10 @@
 		
 		
 	}
+	function loadDashboard(){
+		/* window.location.href = "dashboard.html"; */
+		window.location.href = "https://us-east-1.quicksight.aws.amazon.com/sn/analyses/a56d0c2c-1e36-46e2-8f72-4f319f446943#";
+	}
 </script>
 	
 	
@@ -166,7 +170,7 @@
         <select id="resource_name" name="users" style="width: 60%" onChange="redirectProfilePage(this);">			
 		</select>
         <br><br>
-        <button type="button" class="btn btn-info btn-lg" align ="left">Dashboard</button>
+        <button type="button" class="btn btn-info btn-lg" align ="left" onclick="loadDashboard()">Dashboard</button>
         <button type="button" class="btn btn-info btn-lg" align ="left" onclick="createPreferences();">Recommendations</button>
         <button type="button" class="btn btn-info btn-lg" align ="left" data-toggle="modal" data-target="#myModal">Post Snap</button>
         
