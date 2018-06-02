@@ -26,14 +26,17 @@
 	<script src="https://sdk.amazonaws.com/js/aws-sdk-2.1.12.min.js"></script>
 	<script src="https://sdk.amazonaws.com/js/aws-sdk-2.16.0.min.js"></script>
 <script type="text/javascript" src="login.js"></script>
+<script type="text/javascript" src="readData.js"></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 	<script src="https://apis.google.com/js/platform.js" async defer></script>
 		<script type="text/javascript">
-	var profile=getuserdetails();
-	var profileid=profile.U3;
-	var profilename=profile.ig;
-	getImage(profileid);
-	</script>
+	var profileid = window.location.search;
+	profileid = profileid.split("?")[1].split("=")[1];
+    var profile=getUserprofile(profileid);
+    var profilename="sharanya menon";
+    getImage(profileid);
+    checkFollowing(profileid,profilename);
+    	</script>
 	
 <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
 <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -83,22 +86,14 @@
           </div>
         </div>
         <div class="col-md-8 col-sm-6 section-title text-center">
-        <input type="text" id="myInput" onkeyup="myFunction()" placeholder="Search for names.." title="Type in a name"><br><br>
                
         <h2>Snap !! Share !! Smile !!</h2>
       
+           <button type="button" id="follow" class="btn btn-info btn-lg" align ="left">Follow</button>
+           <button type="button" id="unfollow" class="btn btn-info btn-lg hide" align ="left">UnFollow</button>
         </div>
       </div>
     </div>
-    <div class="categories">
-      <ul class="cat">
-        <li>
-          <ol class="type">
-            <li><a href="#" data-filter="*" class="active">Posts</a></li>       
-             </ol>
-        </li>
-      </ul>
-      </div>
 
     </div>
     <div class="row" >
@@ -127,5 +122,12 @@
 <script type="text/javascript" src="js/jqBootstrapValidation.js"></script> 
 <script type="text/javascript" src="js/contact_me.js"></script> 
 <script type="text/javascript" src="js/main.js"></script>
+<script type="text/javascript">
+var follow=document.getElementById("follow");
+    follow.addEventListener("click", function(){
+    	AddToFollowing(profilename,profileid);
+    	checkFollowing(profileid,profilename);
+    });
+ </script>
 </body>
 </html>
