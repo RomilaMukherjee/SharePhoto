@@ -80,11 +80,17 @@ function readItem(a) {
 }
 
 function showOnUI(data, condition) {
+	var title = "FOLLOWERS";
+	if(condition.toUpperCase()=="FOLLOWERS"){
+		title = "FOLLOWERS";
+	}else{
+		title = "FOLLOWING USERS";
+	}
 
 	document.write("<!DOCTYPE HTML>");
 	document.write("<html>");
 	document.write("    <heads>");
-	document.write("        <title>"+condition.toUpperCase()+"<\/title>");
+	document.write("        <title>"+title+"<\/title>");
 	document.write("<meta charset=\"utf-8\">");
 	document
 			.write("	<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">");
@@ -176,7 +182,7 @@ function showOnUI(data, condition) {
 
 	
 	document.write("<h4 class=\"coloured-text\">"
-			+ condition.toUpperCase() + "<\/h4>");
+			+ title + "<\/h4>");
 	document.write("<div class=\"row\">");
 	document.write("	<div class=\"col-sm-4\" id=\"main_list\">");
 
