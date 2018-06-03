@@ -393,6 +393,7 @@ function getUserprofile(profileId,profilename) {
 				var src = data.Item.userProfile;
 				$("#profilePic").attr('src', src);
 				$("#pName").text(profilename);
+				localStorage.setItem('otherUserProfileUrl',src);
 			}
 		}
 	});

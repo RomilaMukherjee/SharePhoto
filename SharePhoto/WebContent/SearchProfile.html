@@ -39,6 +39,7 @@
     getImage(profileid);
     checkFollowing(profileid,profilename);
     var loggedinuser=getprofiledetails();
+    var loggedInUserURL = loggedinuser.Paa;
 	var loggeduserid=loggedinuser.U3;
 	var loggedname=loggedinuser.ig;
     	</script>
@@ -129,10 +130,15 @@
 <script type="text/javascript" src="js/main.js"></script>
 <script type="text/javascript">
 var follow=document.getElementById("follow");
+/*  var profilevalue = localStorage.getItem('profile');
+ var otherUserProfileUrl = localStorage.getItem('otherUserProfileUrl');
+var finalvalue = JSON.parse(profilevalue);
+var googleUserURL = finalvalue.Paa;  */
     follow.addEventListener("click", function(){
+    	var otherUserProfileUrl = localStorage.getItem('otherUserProfileUrl');
     	$("#follow").addClass("hide");
     	$("#unfollow").removeClass("hide");
-    	AddToFollowing(profilename,profileid);
+    	AddToFollowing(profilename,profileid, otherUserProfileUrl,loggedInUserURL);
     });
     
     var unfollow=document.getElementById("unfollow");
