@@ -53,63 +53,7 @@
 	});	
 </script>
 
-<script type="text/javascript">
-	//var API_URL ="https://f966d1zhff.execute-api.ap-southeast-1.amazonaws.com/prod/RetrieveUsers";
-	var RECO_API_URL="https://yqaciy8fwc.execute-api.us-east-1.amazonaws.com/Prod/getRecommendations";
 
-	$(function() {
-		 $.ajax({
-			 type:'GET',
-			 url:RECO_API_URL,
-			 contentType:"application/json",
-			 
-			 success:function(data){
-        preferences_list = [];
-        for(var i = 0;i<data.preferences.length;i++)
-        {
-          preferences_list[data.preferences[i]] = true;
-        }
-
-        for(var i =0;i<data.recommendation.length;i++)
-        {
-          recommendation_list[i] = data.recommendation[i];
-        }
-        createDiv();
-        
-			
-			}
-		});
-		 return false;
-	});	
-	
-	function createPreferences(){
-		
-		$.ajax({
-			 type:'GET',
-			 url:RECO_API_URL,
-			 contentType:"application/json",
-			 
-			 success:function(data){
-       preferences_list = [];
-       for(var i = 0;i<data.preferences.length;i++)
-       {
-         preferences_list[data.preferences[i]] = true;
-       }
-
-       for(var i =0;i<data.recommendation.length;i++)
-       {
-         recommendation_list[i] = data.recommendation[i];
-       }
-       createDiv();
-       
-			
-			}
-		});
-		 return false;
-		
-		
-	}
-</script>
 	
 	
 <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
@@ -145,7 +89,84 @@
   <!-- /.container-fluid --> 
 </nav>
 <!-- Header -->
+<script type="text/javascript">
+  //var API_URL ="https://f966d1zhff.execute-api.ap-southeast-1.amazonaws.com/prod/RetrieveUsers";
+  getprofiledetails();
+  //var RECO_API_URL="https://yqaciy8fwc.execute-api.us-east-1.amazonaws.com/Prod/getRecommendations";
+  var RECO_API_URL = "https://23b337q514.execute-api.us-east-1.amazonaws.com/Prod/getRecommendations";
+  var params = {"useremail" : "tosvoyager43@gmail.com",
+                "username":"Toshi Mishra"
+        };
 
+
+data = {
+            "useremail": "tosvoyager43@gmail.com",
+            "username": "Toshi Mishra"
+        };
+        var settings = {
+            "async": true,
+            "dataType": "json",
+            "crossDomain": true,
+            "url": RECO_API_URL,
+            "method": "POST",
+            "headers": {
+                "Content-Type": "application/json"
+            },
+            "processData": false,
+            "data": data
+        }
+       
+        $.ajax(settings).done(function (data) {
+          preferences_list = [];
+        for(var i = 0;i<data.preferences.length;i++)
+        {
+          preferences_list[data.preferences[i]] = true;
+        }
+
+        for(var i =0;i<data.recommendation.length;i++)
+        {
+          recommendation_list[i] = data.recommendation[i];
+        }
+        createDiv();
+        });
+        
+		
+	
+	function createPreferences(){
+   
+		data = {
+            "useremail": "tosvoyager43@gmail.com",
+            "username": "Toshi Mishra"
+        };
+        var settings = {
+            "async": true,
+            "dataType": "json",
+            "crossDomain": true,
+            "url": RECO_API_URL,
+            "method": "POST",
+            "headers": {
+                "Content-Type": "application/json"
+            },
+            "processData": false,
+            "data": data
+        }
+       
+        $.ajax(settings).done(function (data) {
+          preferences_list = [];
+        for(var i = 0;i<data.preferences.length;i++)
+        {
+          preferences_list[data.preferences[i]] = true;
+        }
+
+        for(var i =0;i<data.recommendation.length;i++)
+        {
+          recommendation_list[i] = data.recommendation[i];
+        }
+        createDiv();
+        });
+		
+	}
+</script>
 
 
 <!-- Portfolio Section -->
