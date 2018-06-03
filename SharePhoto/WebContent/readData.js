@@ -84,7 +84,7 @@ function showOnUI(data, condition) {
 	document.write("<!DOCTYPE HTML>");
 	document.write("<html>");
 	document.write("    <heads>");
-	document.write("        <title>Test<\/title>");
+	document.write("        <title>"+condition.toUpperCase()+"<\/title>");
 	document.write("<meta charset=\"utf-8\">");
 	document
 			.write("	<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">");
