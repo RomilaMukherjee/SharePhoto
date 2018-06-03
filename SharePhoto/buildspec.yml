@@ -1,0 +1,11 @@
+version: 0.2
+
+phases:
+  post_build:
+    commands:
+      - echo Build completed on 02-06-2018
+      - mvn package
+artifacts:
+  files:
+    - target/SharePhoto.war
+  discard-paths: yes

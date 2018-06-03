@@ -202,7 +202,7 @@ function showOnUI(data, condition) {
 						+ " onclick=\"viewProfile(this)\" class=\"media-heading\">"
 						+ userName + "<\/a>";
 				document.write(nameStr);
-				var idStr = "<p id=" + userIDNo + " class=\"text-success\">"
+				var idStr = "<p hidden id=" + userIDNo + " class=\"text-success\">"
 						+ userId + "<\/p>";
 				document.write(idStr);
 				document.write("			<\/div>");
@@ -242,7 +242,7 @@ function showOnUI(data, condition) {
 						+ " onclick=\"viewProfile(this)\" class=\"media-heading\">"
 						+ userName + "<\/a>";
 				document.write(nameStr);
-				var idStr = "<p id=" + userIDNo + " class=\"text-success\">"
+				var idStr = "<p hidden id=" + userIDNo + " class=\"text-success\">"
 						+ userId + "<\/p>";
 				document.write(idStr);
 				document.write("			<\/div>");
@@ -606,7 +606,8 @@ function   checkFollowing(profileid,profilename){
 							} else {
 								following = JSON.stringify(data, undefined, 2);
 								console.log(data);
-								if(data.Item.following.length >0)
+								if(data!=undefined && data.Item != undefined && data.Item.following != undefined
+										&& data.Item.following.length > 0)
 									{
 								for (i = 0; i < data.Item.following.length; i++) {
 									var id = data.Item.following[i].userId;

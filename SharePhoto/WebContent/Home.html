@@ -54,6 +54,13 @@
 </script>
 
 
+
+	function loadDashboard(){
+		/* window.location.href = "dashboard.html"; */
+		window.location.href = "https://us-east-1.quicksight.aws.amazon.com/sn/analyses/a56d0c2c-1e36-46e2-8f72-4f319f446943#";
+	}
+</script>
+
 	
 	
 <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
@@ -94,12 +101,13 @@
   getprofiledetails();
   //var RECO_API_URL="https://yqaciy8fwc.execute-api.us-east-1.amazonaws.com/Prod/getRecommendations";
   var RECO_API_URL = "https://23b337q514.execute-api.us-east-1.amazonaws.com/Prod/getRecommendations";
+  
   var params = {"useremail" : "tosvoyager43@gmail.com",
                 "username":"Toshi Mishra"
         };
 
 
-data = {
+var params = {
             "useremail": "tosvoyager43@gmail.com",
             "username": "Toshi Mishra"
         };
@@ -113,10 +121,11 @@ data = {
                 "Content-Type": "application/json"
             },
             "processData": false,
-            "data": data
+            "data": JSON.stringify( { "useremail": "tosvoyager43@gmail.com", "username": "Toshi Mishra" } )
         }
        
         $.ajax(settings).done(function (data) {
+          console.log(data);
           preferences_list = [];
         for(var i = 0;i<data.preferences.length;i++)
         {
@@ -133,8 +142,8 @@ data = {
 		
 	
 	function createPreferences(){
-   
-		data = {
+   console.log("String" + JSON.stringify( { "useremail": useremail, "username": username } ));
+		var params = {
             "useremail": "tosvoyager43@gmail.com",
             "username": "Toshi Mishra"
         };
@@ -148,7 +157,7 @@ data = {
                 "Content-Type": "application/json"
             },
             "processData": false,
-            "data": data
+            "data": params
         }
        
         $.ajax(settings).done(function (data) {
@@ -187,7 +196,7 @@ data = {
         <select id="resource_name" name="users" style="width: 60%" onChange="redirectProfilePage(this);">			
 		</select>
         <br><br>
-        <button type="button" class="btn btn-info btn-lg" align ="left">Dashboard</button>
+        <button type="button" class="btn btn-info btn-lg" align ="left" onclick="loadDashboard()">Dashboard</button>
         <button type="button" class="btn btn-info btn-lg" align ="left" onclick="createPreferences();">Recommendations</button>
         <button type="button" class="btn btn-info btn-lg" align ="left" data-toggle="modal" data-target="#myModal">Post Snap</button>
         
