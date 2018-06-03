@@ -2,6 +2,7 @@ var profilevalue = localStorage.getItem('profile');
 var finalvalue = JSON.parse(profilevalue);
 var googleUserName = finalvalue.ig;
 var googleUserId = finalvalue.U3;
+var loggedInUserURL=finalvalue.Paa;
 var otherProfileId;
 var otherProfileName;
 
@@ -156,6 +157,13 @@ function showOnUI(data, condition) {
 	document.write("  <!-- \/.container-fluid --> ");
 	document.write("<\/nav>");
 	document.write("<!-- Header -->");
+	document.write("<style>");
+	document.write("				img {");
+	document.write("					  border-radius: 50%;");
+	document.write("					}");
+	document.write("					<\/style>");
+	document.write("");
+
 	
 	document.write("<script type=\"text\/javascript\" src=\"js\/jquery.1.11.1.js\"><\/script> ");
 	document.write("<script type=\"text\/javascript\" src=\"js\/bootstrap.js\"><\/script> ");
@@ -190,11 +198,13 @@ function showOnUI(data, condition) {
 				var buttonIdFol = "follButton" + i;
 				var userNameId = "divname_" + i;
 				var userIDNo = "userId_" + i;
+				var profilePicId = "profilePic_"+i;
 				document.write("		<div class=\"media user-card-sm\">");
 				document
 						.write("			<a class=\"media-left\"> ");
 				document
-						.write("			<img id=\"profilePic\" class=\"img-circle\" width=\"70\" height=\"70\">");
+						.write("			<img id="+profilePicId+" src="+data.Item.followers[i].profileURL+" class=\"img-circle \" width=\"70\" height=\"70\">");
+
 				document.write("			<\/a>");
 				document.write("			<div class=\"media-body\">");
 
@@ -230,11 +240,12 @@ function showOnUI(data, condition) {
 				var buttonId = 'follButton' + i;
 				var userNameId = "divname_" + i;
 				var userIDNo = "userId_" + i;
+				var profilePicId = "profilePic_"+i;
 				document.write("		<div class=\"media user-card-sm\">");
 				document
 						.write("			<a class=\"media-left\"> ");
 				document
-						.write("			<img id=\"profilePic\" class=\"img-circle\" width=\"70\" height=\"70\">");
+						.write("			<img id="+profilePicId+" src="+data.Item.following[i].profileURL+"class=\"img-circle\" width=\"70\" height=\"70\">");
 				document.write("			<\/a>");
 				document.write("			<div class=\"media-body\">");
 
@@ -277,7 +288,7 @@ function showOnUI(data, condition) {
 	document.write("<div id=\"footer_fixed\">");
 	document.write("  <div class=\"container text-center\">");
 	document.write("    <div class=\"fnav\">");
-	document.write("      <p>2016 Snap Share.<\/p>");
+	document.write("      <p>2018 Snap Share.<\/p>");
 	document.write("    <\/div>");
 	document.write("  <\/div>");
 	document.write("<\/div>");
@@ -395,9 +406,12 @@ function follow(button_id) {
 		var idNo = button_id.substr(10, 1);
 		var nameId = "divname_" + idNo;
 		var emailId = "userId_" + idNo;
+		var otherProfileURL = "profilePic_"+idNo;
+		var loggedInUserURL = finalvalue.Paa;
 		document.getElementById(button_id).innerText = "UNFOLLOW";
 		AddToFollowing(document.getElementById(nameId).innerText, document
-				.getElementById(emailId).innerText);
+				.getElementById(emailId).innerText, document
+				.getElementById(otherProfileURL).src , loggedInUserURL);
 	} else {
 		var idNo = button_id.substr(10, 1);
 		var nameId = "divname_" + idNo;
@@ -464,8 +478,8 @@ function removeFromFollowing(index,userId,userName){
 			});
 }
 
-function AddToFollowing(name, emailID) {
-	AddToTheirFollowers(name, emailID);
+function AddToFollowing(name, emailID, otherUserProfileUrl,loggedInUserURL) {
+	AddToTheirFollowers(name, emailID, loggedInUserURL);
 	var DB = new AWS.DynamoDB.DocumentClient()
 	var table = "user";
 	return DB.update({
@@ -477,7 +491,7 @@ function AddToFollowing(name, emailID) {
 						ReturnValues : 'ALL_NEW',
 						UpdateExpression : 'set following = list_append(if_not_exists(following, :empty_list), :array)',
 						ExpressionAttributeValues : {
-            ':array': [{"userName":name,"userId":emailID}],
+            ':array': [{"userName":name,"userId":emailID,"profileURL":otherUserProfileUrl}],
 							':empty_list' : []
 						}
 					}).promise()
@@ -485,7 +499,7 @@ function AddToFollowing(name, emailID) {
 
 }
 
-function AddToTheirFollowers(name, emailID) {
+function AddToTheirFollowers(name, emailID, loggedInUserURL) {
 	var DB = new AWS.DynamoDB.DocumentClient()
 	var table = "user";
 	return DB.update({
@@ -497,7 +511,7 @@ function AddToTheirFollowers(name, emailID) {
 						ReturnValues : 'ALL_NEW',
 						UpdateExpression : 'set followers = list_append(if_not_exists(followers, :empty_list), :array)',
 						ExpressionAttributeValues : {
-            ':array': [{"userName":googleUserName,"userId":googleUserId}],
+            ':array': [{"userName":googleUserName,"userId":googleUserId,"profileURL":loggedInUserURL}],
 							':empty_list' : []
 						}
 					}).promise()
