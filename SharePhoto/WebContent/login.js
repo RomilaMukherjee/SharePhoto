@@ -6,6 +6,7 @@ var useremail, username;
 var following = [];
 var preferences_list = [];
 var recommendation_list = [];
+var first_vis = true;
 
 //Initialize the Amazon Cognito credentials provider
 AWS.config.region = 'us-east-1'; // Region
@@ -205,6 +206,68 @@ function uploadPic() {
 
 }
 
+/*API to display images that are recommended*/
+function showReco()
+{
+
+	recommendation_list = shuffle(recommendation_list);
+	if(recommendation_list.length<=0){
+		alert("Recommendations not available");
+	}
+	var d = document.getElementById('items');
+	
+	var myNode = document.getElementById("items");
+	while (myNode.firstChild) {
+	    myNode.removeChild(myNode.firstChild);
+	}
+	var bucketName = 'snapsnus2';
+	var s3Bucket = new AWS.S3({signatureVersion: "v4",
+		params : {
+			Bucket : bucketName
+		}
+	});
+	
+
+	if(first_vis == true)
+	{
+		first_vis = false;
+		return;	
+	}
+	for (var i = 0; i < recommendation_list.length; i++) {
+		var urlParams = {
+			Bucket : 'snapsnus2',
+			Key : recommendation_list[i]
+		};
+		
+		s3Bucket.getSignedUrl('getObject', urlParams, function(err, url) {
+			console.log('the url of the image is', url);
+			var iDiv = document.createElement('div');
+			iDiv.id = 'list' + i;
+			iDiv.className = "col-sm-6 col-md-3 col-lg-3 web isotope-item";
+			var child = '<div class="portfolio-item"><div class="hover-bg"> <a "data-rel=prettyPhoto"'
+				+ '><img src='
+				+ url
+				+ ' class="img-responsive" data-toggle="modal" data-target="#myImgModal" onclick="OpenImage(this); viewImg(this,useremail,username)" alt="Project Title"> </a> </div></div>';
+
+			/*curImage.alt = urlParams.Key;
+			curImage.src = url;
+			rightText.href = url;
+			rightText.append(curImage);
+			$('#imageview').append(rightText);*/
+		
+			
+			iDiv.innerHTML = child;
+
+			d.append(iDiv);
+		});
+	}
+}
+function OpenImage(url) {
+	var img=document.getElementById('modalimg');
+	document.getElementById('items').style.visibility = 'hidden';
+img.src=url.src;
+
+}
 
 /**
  * API to Get Image List from S3

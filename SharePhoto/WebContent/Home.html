@@ -27,7 +27,8 @@
 	<script src="https://sdk.amazonaws.com/js/aws-sdk-2.1.12.min.js"></script>
 	<script src="https://sdk.amazonaws.com/js/aws-sdk-2.16.0.min.js"></script>
 	<script type="text/javascript" src="login.js"></script>
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script type="text/javascript" src="js/jquery.prettyPhoto.js"></script> 
 	<script src="https://apis.google.com/js/platform.js" async defer></script>
 	<script type="text/javascript">
 	//var API_URL ="https://f966d1zhff.execute-api.ap-southeast-1.amazonaws.com/prod/RetrieveUsers";
@@ -57,7 +58,10 @@
 	function loadDashboard(){
 		/* window.location.href = "dashboard.html"; */
 		window.location.href = "https://us-east-1.quicksight.aws.amazon.com/sn/analyses/a56d0c2c-1e36-46e2-8f72-4f319f446943#";
-	}
+  }
+  
+  $("a.pp_like").bind("click",function(){likeImg();});
+  $("a.pp_unlike").bind("click",function(){unlikeImg();});
 </script>
 
 	
@@ -103,27 +107,29 @@
   
   
 
-var xhttp = new XMLHttpRequest();
-  xhttp.onreadystatechange = function() {
-    
-    if (this.status == 200) {
-      var data = JSON.parse(this.responseText);
-      console.log(data);
-      preferences_list = [];
-        for(var i = 0;i<data.preferences.length;i++)
-        {
-          preferences_list[data.preferences[i]] = true;
-        }
+// var xhttp = new XMLHttpRequest();
 
-        for(var i =0;i<data.recommendation.length;i++)
-        {
-          recommendation_list[i] = data.recommendation[i];
-        }
-        createDiv();
-    }
-  };
-  xhttp.open("GET", "https://9r56hisms3.execute-api.us-east-1.amazonaws.com/prod/getRecommendations?email="+useremail+"&name="+username, true);
-  xhttp.send();
+//   xhttp.onreadystatechange = function(response) {
+    
+//     if (this.status == 200  ) {
+      
+//       var data =JSON.parse(this.responseText);
+//       console.log(response);
+//       preferences_list = [];
+//         for(var i = 0;i<data.preferences.length;i++)
+//         {
+//           preferences_list[data.preferences[i]] = true;
+//         }
+
+//         for(var i =0;i<data.recommendation.length;i++)
+//         {
+//           recommendation_list[i] = data.recommendation[i];
+//         }
+//         showReco();
+//     }
+//   };
+//   xhttp.open("GET", "https://9r56hisms3.execute-api.us-east-1.amazonaws.com/prod/getRecommendations?email="+useremail+"&name="+username, true);
+//   xhttp.send();
 
 		
 	
@@ -133,8 +139,10 @@ var xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = function() {
     
     if (this.status == 200) {
-      var data = JSON.parse(this.responseText);
-      console.log(data);
+      
+      
+      var data =JSON.parse(this.responseText);
+      
       preferences_list = [];
         for(var i = 0;i<data.preferences.length;i++)
         {
@@ -145,13 +153,14 @@ var xhttp = new XMLHttpRequest();
         {
           recommendation_list[i] = data.recommendation[i];
         }
-        createDiv();
+        showReco();
     }
   };
   xhttp.open("GET", "https://9r56hisms3.execute-api.us-east-1.amazonaws.com/prod/getRecommendations?email="+useremail+"&name="+username, true);
   xhttp.send();
 		
-	}
+  }
+  createPreferences();
 </script>
 
 
@@ -210,9 +219,26 @@ var xhttp = new XMLHttpRequest();
     
     <div class="row">
       <div class="portfolio-items" id ="items">
+          <div class="col-sm-6 col-md-3 col-lg-3" id ="imageitem">
+              <div class="portfolio-item" id="innerimg">
+                <div class="hover-bg" id="imageview"><a id="rightText" href="" rel="prettyPhoto">
+                  <img src="" id="currentImg" class="img-thumbnail img-responsive" onclick="viewImg(this,profileid,profilename);" alt=""></a> </div>
+              </div>
+            </div>
    
       </div>
     </div>
+    <div id="myImgModal" class="modal fade" role="dialog"  aria-hidden="true">
+        <div class="modal-dialog" id="modaldialog">         
+	  <div class="modal-content">
+	  <button type="button" class="close" data-dismiss="modal" onclick="location.reload();">&times;</button>
+	       <img src="" style="width:100%" id="modalimg">
+	       <div class="numbertext">
+	       <a class="pp_like" id="like" href=# onclick="likeImg();">Like</a>	   
+	       <a class="pp_unlike hide" id="unlike" href=# onclick="unlikeImg();">Unlike</a>	</div>
+	       </div>
+	</div>
+</div>
 
 <div id="footer_fixed">
   <div class="container text-center">
