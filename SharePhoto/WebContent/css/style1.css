@@ -639,3 +639,8 @@ header .intro-text {
 {
 	width:80% !importnant;
 }
+
+#myImgModal{
+	aria-hidden:"true" !important;
+	visibility:visible
+}

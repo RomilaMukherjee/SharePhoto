@@ -165,7 +165,7 @@ function uploadPic() {
 	console.log(preferences_list);
 
 	var bucketName = 'snapsnus2';
-	var bucket = new AWS.S3({
+	var bucket = new AWS.S3({signatureVersion: "v4",
 		params : {
 			Bucket : bucketName
 		}
@@ -183,7 +183,9 @@ function uploadPic() {
 			Key : objKey,
 			ContentType : file.type,
 			Body : file,
-			ACL : 'public-read'
+			ACL : 'public-read',
+			 ServerSideEncryption : 'aws:kms',
+			 SSEKMSKeyId:'ec022e8f-ef53-4cdc-ada8-2b13309f951a'
 		};
 
 		bucket.putObject(params, function(err, data) {
@@ -204,17 +206,12 @@ function uploadPic() {
 }
 
 
-
-
-
-
-
 /**
  * API to Get Image List from S3
  */
 function getImage(profileid) {
 	var bucketName = 'snapsnus2';
-	var s3Bucket = new AWS.S3({
+	var s3Bucket = new AWS.S3({signatureVersion: "v4",
 		params : {
 			Bucket : bucketName
 		}
@@ -242,15 +239,35 @@ function getImage(profileid) {
 			};
 			s3Bucket.getSignedUrl('getObject', urlParams, function(err, url) {
 				console.log('the url of the image is', url);
-				curImage.alt = urlParams.Key;
+				var iDiv = document.createElement('div');
+				iDiv.id = 'list' + i;
+				iDiv.className = "col-sm-6 col-md-3 col-lg-3 web isotope-item";
+				var child = '<div class="portfolio-item"><div class="hover-bg"> <a "data-rel=prettyPhoto"'
+					+ '><img src='
+					+ url
+					+ ' class="img-responsive" data-toggle="modal" data-target="#myImgModal" onclick="OpenModal(this); viewImg(this,useremail,username)" alt="Project Title"> </a> </div></div>';
+
+				/*curImage.alt = urlParams.Key;
 				curImage.src = url;
 				rightText.href = url;
 				rightText.append(curImage);
-				$('#imageview').append(rightText);
+				$('#imageview').append(rightText);*/
+			
+				
+				iDiv.innerHTML = child;
+
+				$('#formimg').append(iDiv);
 			});
 		}
 	});
 }
+
+function OpenModal(url) {
+		  var img=document.getElementById('modalimg');
+		  document.getElementById('formimg').style.visibility = 'hidden';
+	  img.src=url.src;
+	 
+	}
 
 function searchProfile(searchString) {
 

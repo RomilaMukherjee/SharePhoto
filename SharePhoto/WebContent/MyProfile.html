@@ -24,7 +24,8 @@
 <link rel="stylesheet" type="text/css" href="css/prettyPhoto.css">
 <link href="http://fonts.googleapis.com/css?family=Open+Sans:400,700,800,600,300" rel="stylesheet" type="text/css">
 	<script src="https://sdk.amazonaws.com/js/aws-sdk-2.1.12.min.js"></script>
-	<script src="https://sdk.amazonaws.com/js/aws-sdk-2.16.0.min.js"></script>
+	<script src="https://sdk.amazonaws.com/js/aws-sdk-2.16.0.min.js"></script>	
+<script type="text/javascript" src="js/jquery.prettyPhoto.js"></script> 
 <script type="text/javascript" src="login.js"></script>
 <script type="text/javascript" src="apigClient.js"></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
@@ -34,6 +35,8 @@
 	var profileid=profile.U3;
 	var profilename=profile.ig;
   getImage(profileid);
+  $("a.pp_like").bind("click",function(){likeImg();});
+  $("a.pp_unlike").bind("click",function(){unlikeImg();});
 	</script>
 	
 <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
@@ -91,6 +94,7 @@
         <button type="button" class="btn btn-info btn-lg" align ="left" onclick="window.location.href = 'FollowerUsers.html'">Followers</button>
         <button type="button" class="btn btn-info btn-lg" align ="left" onclick="window.location.href = 'FollowingUsers.html'">Following</button>
         
+
         <!-- Upload Snap  -->
                <div class="modal fade" id="myModal" role="dialog" aria-hidden="true">
                     <div class="modal-dialog" id="modaldialog">
@@ -99,7 +103,7 @@
                      <div class="modal-content" id="modelpopup">      
                        <div class="modal-header">
                           <button type="button" class="close" data-dismiss="modal">&times;</button>
-                          <h4 class="modal-title">Choose Snap to Post</h4>
+                          <h5 class="modal-title">Choose Snap to Post</h5>
                        </div>
                        
                     <div class="modal-body">
@@ -116,6 +120,7 @@
           </div>    
      </div>
       </div>
+
       
         </div>
       </div>
@@ -140,6 +145,20 @@
         </div>
       </div>
     </div>
+    
+      
+          
+        <div id="myImgModal" class="modal fade" role="dialog"  aria-hidden="true">
+        <div class="modal-dialog" id="modaldialog">         
+	  <div class="modal-content">
+	  <button type="button" class="close" data-dismiss="modal" onclick="location.reload();">&times;</button>
+	       <img src="" style="width:100%" id="modalimg">
+	       <div class="numbertext">
+	       <a class="pp_like" id="like" href=# onclick="likeImg();">Like</a>	   
+	       <a class="pp_unlike hide" id="unlike" href=# onclick="unlikeImg();">Unlike</a>	</div>
+	       </div>
+	</div>
+</div>
 
 <div id="footer">
   <div class="container text-center">
