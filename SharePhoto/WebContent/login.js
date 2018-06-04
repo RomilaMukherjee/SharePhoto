@@ -165,7 +165,7 @@ function uploadPic() {
 	console.log(preferences_list);
 
 	var bucketName = 'snapsnus2';
-	var bucket = new AWS.S3({signatureVersion: "v4",
+	var bucket = new AWS.S3({
 		params : {
 			Bucket : bucketName
 		}
@@ -183,9 +183,7 @@ function uploadPic() {
 			Key : objKey,
 			ContentType : file.type,
 			Body : file,
-			ACL : 'public-read',
-			 ServerSideEncryption : 'aws:kms',
-			 SSEKMSKeyId:'ec022e8f-ef53-4cdc-ada8-2b13309f951a'
+			ACL : 'public-read'
 		};
 
 		bucket.putObject(params, function(err, data) {
